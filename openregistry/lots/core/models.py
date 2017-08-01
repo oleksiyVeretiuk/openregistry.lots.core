@@ -11,7 +11,8 @@ from openregistry.api.models import (
     Revision, Model, schematics_embedded_role,
     IsoDateTimeType, ListType,
     schematics_default_role,
-    plain_role, listing_role
+    plain_role, listing_role,
+    Organization
 )
 
 from openregistry.api.interfaces import IORContent
@@ -66,6 +67,7 @@ class BaseLot(SchematicsDocument, Model):
     description = StringType()
     description_en = StringType()
     description_ru = StringType()
+    lotCustodian = ModelType(Organization, required=True)
 
     _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
     revisions = ListType(ModelType(Revision), default=list())
@@ -108,7 +110,7 @@ class Lot(BaseLot):
     status = StringType(choices=['draft', 'active.pending', 'active.inauction',
                                  'sold', 'disssolved', 'deleted', 'invalid'],
                         default='active.pending')
-    auctionId = MD5Type()
+    auctionId = MD5Type() # XXX TODO serializable
     auctions = ListType(MD5Type(), default=list())
     assets = ListType(MD5Type(), required=True)
 
