@@ -7,6 +7,7 @@ from openregistry.lots.core.utils import (
 from openregistry.api.interfaces import IContentConfigurator
 from openregistry.lots.core.models import ILot
 from openregistry.lots.core.adapters import LotConfigurator
+from openregistry.api.utils import load_plugins
 
 
 def includeme(config):
@@ -29,7 +30,6 @@ def includeme(config):
     # search for plugins
     settings = config.get_settings()
     plugins = settings.get('plugins') and settings['plugins'].split(',')
-    for entry_point in iter_entry_points('openregistry.lots.core.plugins'):
-        if not plugins or entry_point.name in plugins:
-            plugin = entry_point.load()
-            plugin(config)
+    load_plugins(config,
+                 group='openregistry.lots.core.plugins',
+                 plugins=plugins)
