@@ -116,7 +116,6 @@ class Lot(BaseLot):
     status = StringType(choices=['draft', 'pending', 'inauction',
                                  'sold', 'disssolved', 'deleted', 'invalid'],
                         default='pending')
-    auctionId = MD5Type()  # XXX TODO serializable
     auctions = ListType(MD5Type(), default=list())
     assets = ListType(MD5Type(), required=True)
 
