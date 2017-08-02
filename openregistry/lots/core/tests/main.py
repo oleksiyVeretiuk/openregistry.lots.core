@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openregistry.lots.core.tests import lot
+from openregistry.lots.core.tests import lots
 
 
 def suite():
