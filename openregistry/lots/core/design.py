@@ -6,6 +6,7 @@ from openregistry.api import design
 FIELDS = [
     'status',
     'lotID',
+    'lotType'
 ]
 
 CHANGES_FIELDS = FIELDS + [

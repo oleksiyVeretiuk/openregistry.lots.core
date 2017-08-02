@@ -144,6 +144,7 @@ class SubscribersPicker(isLot):
 
 
 def lot_serialize(request, lot_data, fields):
+    import pdb; pdb.set_trace()
     lot = request.lot_from_data(lot_data, raise_error=False)
     if lot is None:
         return dict([(i, lot_data.get(i, '')) for i in ['lotType', 'dateModified', 'id']])

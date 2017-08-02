@@ -33,10 +33,10 @@ class LotsResource(APIResourceListing):
         self.object_name_for_listing = 'Lots'
         self.log_message_id = 'lot_list_custom'
 
-    @json_view(content_type="application/json", permission='create_lot', validators=(validate_lot_data,))
+    @json_view(content_type="application/json", permission='create_lot',
+               validators=(validate_lot_data,))
     def post(self):
         """This API request is targeted to creating new Lot."""
-
         lot_id = generate_id()
         lot = self.request.validated['lot']
         lot.id = lot_id
@@ -52,7 +52,7 @@ class LotsResource(APIResourceListing):
             self.LOGGER.info('Created lot {} ({})'.format(lot_id, lot.lotID),
                         extra=context_unpack(self.request, {'MESSAGE_ID': 'lot_create'}, {'lot_id': lot_id, 'lotID': lot.lotID}))
             self.request.response.status = 201
-            self.request.response.headers['Location'] = self.request.route_url('{}:lot'.format(lot.lotType), lot_id=lot_id)
+            self.request.response.headers['Location'] = self.request.route_url('{}:Lot'.format(lot.lotType), lot_id=lot_id)
             return {
                 'data': lot.serialize(lot.status),
                 'access': {

@@ -23,10 +23,10 @@ from openregistry.api.models.roles import (
 from openregistry.api.interfaces import IORContent
 
 
-create_role = (blacklist('owner_token', '_attachments', 'revisions',
+create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions',
                          'date', 'dateModified', 'lotID',
                          'status', 'doc_id') + schematics_embedded_role)
-edit_role = (blacklist('owner_token', 'status', '_attachments',
+edit_role = (blacklist('owner_token', 'owner', 'status', '_attachments',
                        'revisions', 'date', 'dateModified',
                        'lotID', 'mode', 'doc_id') + schematics_embedded_role)
 view_role = (blacklist('owner_token',
@@ -63,6 +63,7 @@ class BaseLot(SchematicsDocument, Model):
 
     lotID = StringType()  # lotID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
     mode = StringType(choices=['test'])
+    owner = StringType()
     owner_token = StringType()
     date = IsoDateTimeType()
     dateModified = IsoDateTimeType()
@@ -86,7 +87,7 @@ class BaseLot(SchematicsDocument, Model):
         return '<%s:%r@%r>' % (type(self).__name__, self.id, self.rev)
 
     def __local_roles__(self):
-        roles = dict([('{}_{}'.format(self.owner, self.owner_token), 'asset_owner')])
+        roles = dict([('{}_{}'.format(self.owner, self.owner_token), 'lot_owner')])
         return roles
 
     @serializable(serialized_name='id')
@@ -105,16 +106,16 @@ class BaseLot(SchematicsDocument, Model):
 
     def __acl__(self):
         acl = [
-            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_asset'),
-            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'upload_asset_documents'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_lot'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'upload_lot_documents'),
         ]
         return acl
 
 
 class Lot(BaseLot):
-    status = StringType(choices=['draft', 'active.pending', 'active.inauction',
+    status = StringType(choices=['draft', 'pending', 'inauction',
                                  'sold', 'disssolved', 'deleted', 'invalid'],
-                        default='active.pending')
+                        default='pending')
     auctionId = MD5Type()  # XXX TODO serializable
     auctions = ListType(MD5Type(), default=list())
     assets = ListType(MD5Type(), required=True)
