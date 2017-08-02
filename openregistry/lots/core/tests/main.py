@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from openregistry.assets.core.tests import asset, migration
+from openregistry.lots.core.tests import lot
+
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(asset.suite())
-    suite.addTest(migration.suite())
+    suite.addTest(lot.suite())
     return suite
 
 
