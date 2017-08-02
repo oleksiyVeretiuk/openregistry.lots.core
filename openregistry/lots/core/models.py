@@ -1,18 +1,23 @@
 # -*- coding: utf-8 -*-
 from schematics.transforms import whitelist, blacklist
 from schematics.types import BaseType, StringType, MD5Type
-from schematics.types.compound import ModelType, DictType
+from schematics.types.compound import ModelType, DictType, ListType
 from couchdb_schematics.document import SchematicsDocument
 from zope.interface import implementer
 from schematics.types.serializable import serializable
 from pyramid.security import Allow
 
-from openregistry.api.models import (
-    Revision, Model, schematics_embedded_role,
-    IsoDateTimeType, ListType,
+from openregistry.api.models.ocds import (
+    Revision,
+    Organization
+)
+from openregistry.api.models.schematics_extender import (
+    Model, IsoDateTimeType,
+)
+from openregistry.api.models.roles import (
+    schematics_embedded_role,
     schematics_default_role,
     plain_role, listing_role,
-    Organization
 )
 
 from openregistry.api.interfaces import IORContent
@@ -110,7 +115,7 @@ class Lot(BaseLot):
     status = StringType(choices=['draft', 'active.pending', 'active.inauction',
                                  'sold', 'disssolved', 'deleted', 'invalid'],
                         default='active.pending')
-    auctionId = MD5Type() # XXX TODO serializable
+    auctionId = MD5Type()  # XXX TODO serializable
     auctions = ListType(MD5Type(), default=list())
     assets = ListType(MD5Type(), required=True)
 
