@@ -6,7 +6,7 @@ from openregistry.lots.core.tests import lots
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(lot.suite())
+    suite.addTest(lots.suite())
     return suite
 
 
