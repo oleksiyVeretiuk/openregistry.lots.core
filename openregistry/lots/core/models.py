@@ -53,6 +53,8 @@ class BaseLot(SchematicsDocument, Model):
             'draft': edit_role,
             'plain': plain_role,
             'edit': edit_role,
+            'waiting': view_role,
+            'edit_waiting': edit_role,
             'active.pending': view_role,
             'edit_active.pending': blacklist('revisions'),
             'pending': view_role,
