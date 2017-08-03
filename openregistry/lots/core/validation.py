@@ -33,7 +33,6 @@ def validate_patch_lot_data(request, error_handler, **kwargs):
     request.context.status = default_status
 
 
-
 def validate_lot_status_update_in_terminated_status(request, error_handler, **kwargs):
     lot = request.context
     if request.authenticated_role != 'Administrator' and lot.status in ['active', 'deleted']:

@@ -116,7 +116,7 @@ class Lot(BaseLot):
     status = StringType(choices=['draft', 'waiting', 'active.pending',
                                  'active.inauction', 'sold', 'disssolved',
                                  'deleted', 'invalid'],
-                        default='pending')
+                        default='active.pending')
     auctions = ListType(MD5Type(), default=list())
     assets = ListType(MD5Type(), required=True)
 
