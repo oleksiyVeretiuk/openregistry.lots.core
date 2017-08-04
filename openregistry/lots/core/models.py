@@ -2,6 +2,7 @@
 from schematics.transforms import whitelist, blacklist
 from schematics.types import BaseType, StringType, MD5Type
 from schematics.types.compound import ModelType, DictType, ListType
+from schematics.exceptions import ValidationError
 from couchdb_schematics.document import SchematicsDocument
 from zope.interface import implementer
 from schematics.types.serializable import serializable
@@ -115,13 +116,20 @@ class BaseLot(SchematicsDocument, Model):
         return acl
 
 
+def validate_asset_uniq(assets, *args):
+    if len(assets) != len(set(assets)):
+        raise ValidationError(u"Assets should be unique")
+
+
 class Lot(BaseLot):
     status = StringType(choices=['draft', 'waiting', 'active.pending',
                                  'active.inauction', 'sold', 'disssolved',
                                  'deleted', 'invalid'],
                         default='active.pending')
     auctions = ListType(MD5Type(), default=list())
-    assets = ListType(MD5Type(), required=True)
+    assets = ListType(MD5Type(), required=False, validators=[
+        validate_asset_uniq,
+    ])
 
     create_accreditation = 1
     edit_accreditation = 2
