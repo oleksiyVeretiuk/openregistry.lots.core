@@ -115,7 +115,7 @@ class BaseLot(SchematicsDocument, Model):
 
 class Lot(BaseLot):
     status = StringType(choices=['draft', 'waiting', 'active.pending',
-                                 'active.inauction', 'sold', 'disssolved',
+                                 'active.inauction', 'sold', 'dissolved',
                                  'deleted', 'invalid'],
                         default='active.pending')
     auctions = ListType(MD5Type(), default=list())
