@@ -45,6 +45,8 @@ class LotsResource(APIResourceListing):
         self.request.registry.notify(LotInitializeEvent(lot))
         if self.request.json_body['data'].get('status') == 'draft':
             lot.status = 'draft'
+        elif self.request.json_body['data'].get('status') == 'waiting':
+            lot.status = 'waiting'
         set_ownership(lot, self.request)  # rewrite as subscriber?
         self.request.validated['lot'] = lot
         self.request.validated['lot_src'] = {}
