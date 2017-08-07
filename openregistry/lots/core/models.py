@@ -50,7 +50,7 @@ class BaseLot(SchematicsDocument, Model):
     class Options:
         roles = {
             'create': create_role,
-            'draft': edit_role,
+            'draft': view_role,
             'plain': plain_role,
             'edit': edit_role,
             'active.pending': view_role,
@@ -60,6 +60,7 @@ class BaseLot(SchematicsDocument, Model):
             'listing': listing_role,
             'Administrator': Administrator_role,
             'default': schematics_default_role,
+            'waiting': view_role,
         }
 
     lotID = StringType()  # lotID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
@@ -117,7 +118,7 @@ class Lot(BaseLot):
     status = StringType(choices=['draft', 'waiting', 'active.pending',
                                  'active.inauction', 'sold', 'disssolved',
                                  'deleted', 'invalid'],
-                        default='active.pending')
+                        default='waiting')
     auctions = ListType(MD5Type(), default=list())
     assets = ListType(MD5Type(), required=True)
 
