@@ -47,6 +47,11 @@ class LotsResource(APIResourceListing):
             lot.status = 'draft'
         elif self.request.json_body['data'].get('status') == 'waiting':
             lot.status = 'waiting'
+        else:
+            self.request.errors.add('body', 'status',
+                               'You can create only in draft or waiting statuses')
+            self.request.errors.status = 403
+            return
         set_ownership(lot, self.request)  # rewrite as subscriber?
         self.request.validated['lot'] = lot
         self.request.validated['lot_src'] = {}
