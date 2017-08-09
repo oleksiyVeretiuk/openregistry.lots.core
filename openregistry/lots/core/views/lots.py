@@ -43,6 +43,7 @@ class LotsResource(APIResourceListing):
         if not lot.get('lotID'):
             lot.lotID = generate_lot_id(get_now(), self.db, self.server_id)
         self.request.registry.notify(LotInitializeEvent(lot))
+        # TODO Check default status
         if self.request.json_body['data'].get('status') == 'draft':
             lot.status = 'draft'
         elif self.request.json_body['data'].get('status') == 'waiting':

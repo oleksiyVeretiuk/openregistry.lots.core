@@ -99,7 +99,7 @@ def lot_from_data(request, data, raise_error=True, create=True):
 
 
 def apply_patch(request, data=None, save=True, src=None):
-    data = request.validated['data'] if data is None else data
+    data = request.validated.get('data') if data is None else data
     patch = data and apply_data_patch(src or request.context.serialize(), data)
     if patch:
         request.context.import_data(patch)
