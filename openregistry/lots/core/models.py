@@ -3,18 +3,12 @@ from schematics.transforms import whitelist, blacklist
 from schematics.types import BaseType, StringType, MD5Type
 from schematics.types.compound import ModelType, DictType, ListType
 from schematics.exceptions import ValidationError
-from couchdb_schematics.document import SchematicsDocument
 from zope.interface import implementer
-from schematics.types.serializable import serializable
 from pyramid.security import Allow
 
-from openregistry.api.models.ocds import (
-    Revision,
-    Organization
-)
-from openregistry.api.models.schematics_extender import (
-    Model, IsoDateTimeType,
-)
+from openregistry.api.models.ocds import Organization
+from openregistry.api.models.schematics_extender import IsoDateTimeType
+from openregistry.api.models.common import BaseResourceItem
 from openregistry.api.models.roles import (
     schematics_embedded_role,
     schematics_default_role,
@@ -47,7 +41,7 @@ def get_lot(model):
 
 
 @implementer(ILot)
-class BaseLot(SchematicsDocument, Model):
+class BaseLot(BaseResourceItem):
     class Options:
         roles = {
             'create': create_role,
@@ -73,11 +67,7 @@ class BaseLot(SchematicsDocument, Model):
         }
 
     lotID = StringType()  # lotID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
-    mode = StringType(choices=['test'])
-    owner = StringType()
-    owner_token = StringType()
     date = IsoDateTimeType()
-    dateModified = IsoDateTimeType()
     title = StringType(required=True)
     title_en = StringType()
     title_ru = StringType()
@@ -86,25 +76,12 @@ class BaseLot(SchematicsDocument, Model):
     description_ru = StringType()
     lotCustodian = ModelType(Organization, required=True)
 
-    _attachments = DictType(DictType(BaseType), default=dict())  # couchdb attachments
-    revisions = ListType(ModelType(Revision), default=list())
-
     create_accreditation = 1
     edit_accreditation = 2
-
-    __name__ = ''
-
-    def __repr__(self):
-        return '<%s:%r@%r>' % (type(self).__name__, self.id, self.rev)
 
     def __local_roles__(self):
         roles = dict([('{}_{}'.format(self.owner, self.owner_token), 'lot_owner')])
         return roles
-
-    @serializable(serialized_name='id')
-    def doc_id(self):
-        """A property that is serialized by schematics exports."""
-        return self._id
 
     def get_role(self):
         root = self.__parent__
