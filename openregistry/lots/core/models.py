@@ -63,6 +63,12 @@ class BaseLot(SchematicsDocument, Model):
             'listing': listing_role,
             'Administrator': Administrator_role,
             'default': schematics_default_role,
+            'dissolved': view_role,
+            'edit_dissolved': whitelist(),
+            'deleted': view_role,
+            'edit_deleted': whitelist(),
+            'invalid': view_role,
+            'edit_invalid': edit_role
         }
 
     lotID = StringType()  # lotID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
