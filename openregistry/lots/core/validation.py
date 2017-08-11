@@ -10,14 +10,14 @@ def validate_lot_data(request, error_handler, **kwargs):
 
     model = request.lot_from_data(data, create=False)
     if not any([request.check_accreditation(acc) for acc in iter(str(model.create_accreditation))]):
-        request.errors.add('lotType', 'accreditation',
+        request.errors.add('body', 'accreditation',
                            'Broker Accreditation level does not permit lot creation')
         request.errors.status = 403
         raise error_handler(request.errors)
 
     data = validate_data(request, model, data=data)
     if data and data.get('mode', None) is None and request.check_accreditation('t'):
-        request.errors.add('lotType', 'mode', 'Broker Accreditation level does not permit lot creation')
+        request.errors.add('body', 'mode', 'Broker Accreditation level does not permit lot creation')
         request.errors.status = 403
         raise error_handler(request)
 
