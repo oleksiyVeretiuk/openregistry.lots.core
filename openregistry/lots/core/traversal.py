@@ -16,12 +16,12 @@ class Root(object):
         # (Allow, Everyone, ALL_PERMISSIONS),
         (Allow, Everyone, 'view_listing'),
         (Allow, Everyone, 'view_lot'),
-        (Allow, 'group:brokers', 'create_lot'),
-        (Allow, 'group:brokers', 'edit_lot'),
-        (Allow, 'group:Administrator', 'edit_lot'),
-        (Allow, 'group:admins', ALL_PERMISSIONS),
-        (Allow, 'group:bot1', 'edit_lot'),
-        (Allow, 'group:bot2', 'edit_lot'),
+        (Allow, 'g:brokers', 'create_lot'),
+        (Allow, 'g:brokers', 'edit_lot'),
+        (Allow, 'g:Administrator', 'edit_lot'),
+        (Allow, 'g:admins', ALL_PERMISSIONS),
+        (Allow, 'g:bot1', 'edit_lot'),
+        (Allow, 'g:bot2', 'edit_lot'),
     ]
 
     def __init__(self, request):

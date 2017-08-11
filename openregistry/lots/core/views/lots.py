@@ -57,7 +57,7 @@ class LotsResource(APIResourceListing):
             self.request.errors.status = 403
             return
 
-        set_ownership(lot, self.request)  # rewrite as subscriber?
+        acc = set_ownership(lot, self.request)
         self.request.validated['lot'] = lot
         self.request.validated['lot_src'] = {}
         if save_lot(self.request):
@@ -67,7 +67,5 @@ class LotsResource(APIResourceListing):
             self.request.response.headers['Location'] = self.request.route_url('{}:Lot'.format(lot.lotType), lot_id=lot_id)
             return {
                 'data': lot.serialize(lot.status),
-                'access': {
-                    'token': lot.owner_token
-                }
+                'access': acc
             }
