@@ -52,6 +52,7 @@ class BaseLot(BaseResourceItem):
             'edit_waiting': edit_role,
             'edit_draft': edit_role,
             'active.pending': view_role,
+            'active.inauction': view_role,
             'edit_active.pending': blacklist('revisions'),
             'edit_active.inauction': edit_role,
             'pending': view_role,
@@ -64,7 +65,8 @@ class BaseLot(BaseResourceItem):
             'deleted': view_role,
             'edit_deleted': whitelist(),
             'invalid': view_role,
-            'edit_invalid': edit_role
+            'edit_invalid': edit_role,
+            'sold': view_role
         }
 
     lotID = StringType()  # lotID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
