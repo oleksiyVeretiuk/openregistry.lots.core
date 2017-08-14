@@ -20,7 +20,8 @@ class Root(object):
         (Allow, 'g:brokers', 'edit_lot'),
         (Allow, 'g:Administrator', 'edit_lot'),
         (Allow, 'g:admins', ALL_PERMISSIONS),
-        (Allow, 'g:bot', 'edit_lot'),
+        (Allow, 'g:bot1', 'edit_lot'),
+        (Allow, 'g:bot2', 'edit_lot'),
     ]
 
     def __init__(self, request):
@@ -38,6 +39,7 @@ def factory(request):
     lot.__parent__ = root
     request.validated['lot'] = request.validated['db_doc'] = lot
     request.validated['lot_status'] = lot.status
+    request.validated['resource_type'] = "lot"
     if request.method != 'GET':
         request.validated['lot_src'] = lot.serialize('plain')
     if request.matchdict.get('document_id'):

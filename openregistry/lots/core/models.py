@@ -21,7 +21,7 @@ from openregistry.api.interfaces import IORContent
 create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions',
                          'date', 'dateModified', 'lotID',
                          'status', 'doc_id') + schematics_embedded_role)
-edit_role = (blacklist('owner_token', 'owner', 'status', '_attachments',
+edit_role = (blacklist('owner_token', 'owner', '_attachments',
                        'revisions', 'date', 'dateModified',
                        'lotID', 'mode', 'doc_id') + schematics_embedded_role)
 view_role = (blacklist('owner_token',
@@ -50,6 +50,7 @@ class BaseLot(BaseResourceItem):
             'edit': edit_role,
             'waiting': view_role,
             'edit_waiting': edit_role,
+            'edit_draft': edit_role,
             'active.pending': view_role,
             'edit_active.pending': blacklist('revisions'),
             'edit_active.inauction': edit_role,

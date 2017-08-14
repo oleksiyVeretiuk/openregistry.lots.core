@@ -7,7 +7,6 @@ def validate_lot_data(request, error_handler, **kwargs):
     update_logging_context(request, {'lot_id': '__new__'})
 
     data = validate_json_data(request)
-
     model = request.lot_from_data(data, create=False)
     if not any([request.check_accreditation(acc) for acc in iter(str(model.create_accreditation))]):
         request.errors.add('body', 'accreditation',
@@ -33,9 +32,8 @@ def validate_patch_lot_data(request, error_handler, **kwargs):
     data = validate_json_data(request)
     if request.context.status != 'draft':
         return validate_data(request, type(request.lot), True, data)
-
-
-def validate_lot_status_update_in_terminated_status(request, error_handler, **kwargs):
-    lot = request.context
-    if lot.status in ['active', 'deleted']:
-        raise_operation_error(request, error_handler, 'Can\'t update lot in current ({}) status'.format(lot.status))
+    default_status = type(request.lot).fields['status'].default
+    if data.get('status') != default_status and data.get('status') != 'deleted':
+        raise_operation_error(request, error_handler, 'Can\'t update lot in current (waiting) status')
+    request.validated['data'] = {'status': default_status}
+    request.context.status = default_status
