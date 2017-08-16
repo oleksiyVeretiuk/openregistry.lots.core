@@ -26,6 +26,10 @@ class BaseLotWebTest(BaseWebTest):
     relative_to = os.path.dirname(__file__)
 
     def set_status(self, status, extra=None):
+        data = {'status': status}
+        if status == "pending":
+            data['status'] = status
+
         if extra:
             data.update(extra)
 
@@ -33,13 +37,25 @@ class BaseLotWebTest(BaseWebTest):
         lot.update(apply_data_patch(lot, data))
         self.db.save(lot)
 
-        authorization = self.app.authorization
-        self.app.authorization = ('Basic', ('chronograph', ''))
         response = self.app.get('/lots/{}'.format(self.lot_id))
-        self.app.authorization = authorization
         self.assertEqual(response.status, '200 OK')
         self.assertEqual(response.content_type, 'application/json')
-        return response
+        lot = response.json['data']
+        self.assertEqual(lot['status'], status)
+        return lot
+
+    def create_lot(self, extra=None):
+        data = deepcopy(self.initial_data)
+        if extra:
+            data.update(extra)
+        response = self.app.post_json('/lots', {'data': data})
+        lot = response.json['data']
+        self.lot_token = response.json['access']['token']
+        self.lot_id = lot['id']
+        status = lot['status']
+        if self.initial_status != status:
+            lot = self.set_status(self.initial_status)
+        return lot
 
     def setUp(self):
         super(BaseLotWebTest, self).setUp()
@@ -82,46 +98,6 @@ class BaseLotWebTest(BaseWebTest):
         signature = b64encode(key.signature("{}\0{}".format(uuid, '0' * 32)))
         query = {'Signature': signature, 'KeyID': keyid}
         return "http://localhost/get/{}?{}".format(uuid, urlencode(query))
-
-    def create_lot(self):
-        data = deepcopy(self.initial_data)
-        if self.initial_lots:
-            lots = []
-            for i in self.initial_lots:
-                lot = deepcopy(i)
-                lot['id'] = uuid4().hex
-                lots.append(lot)
-            data['lots'] = self.initial_lots = lots
-            for i, item in enumerate(data['items']):
-                item['relatedLot'] = lots[i % len(lots)]['id']
-        response = self.app.post_json('/lots', {'data': data})
-        lot = response.json['data']
-        self.lot_token = response.json['access']['token']
-        self.lot_id = lot['id']
-        status = lot['status']
-        if self.initial_bids:
-            self.initial_bids_tokens = {}
-            response = self.set_status('active.pending')
-            status = response.json['data']['status']
-            bids = []
-            for i in self.initial_bids:
-                if self.initial_lots:
-                    i = i.copy()
-                    value = i.pop('value')
-                    i['lotValues'] = [
-                        {
-                            'value': value,
-                            'relatedLot': l['id'],
-                        }
-                        for l in self.initial_lots
-                    ]
-                response = self.app.post_json('/lots/{}/bids'.format(self.lot_id), {'data': i})
-                self.assertEqual(response.status, '201 Created')
-                bids.append(response.json['data'])
-                self.initial_bids_tokens[response.json['data']['id']] = response.json['access']['token']
-            self.initial_bids = bids
-        if self.initial_status != status:
-            self.set_status(self.initial_status)
 
     def tearDownDS(self):
         SESSION.request = self._srequest

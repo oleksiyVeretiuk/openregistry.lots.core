@@ -30,10 +30,12 @@ def validate_post_lot_role(request, error_handler, **kwargs):
 
 def validate_patch_lot_data(request, error_handler, **kwargs):
     data = validate_json_data(request)
-    if request.context.status != 'draft':
-        return validate_data(request, type(request.lot), True, data)
+    editing_roles = request.content_configurator.available_statuses[request.context.status]['editing_permissions']
+    if request.authenticated_role not in editing_roles:
+        msg = 'Can\'t update {} in current ({}) status'.format(request.validated['resource_type'],
+                                                               request.context.status)
+        raise_operation_error(request, error_handler, msg)
     default_status = type(request.lot).fields['status'].default
-    if data.get('status') != default_status and data.get('status') != 'deleted':
-        raise_operation_error(request, error_handler, 'Can\'t update lot in current (waiting) status')
-    request.validated['data'] = {'status': default_status}
-    request.context.status = default_status
+    if data.get('status') == default_status and data.get('status') != request.context.status:
+        raise_operation_error(request, error_handler, 'Can\'t switch lot to {} status'.format(default_status))
+    return validate_data(request, type(request.lot), True, data)

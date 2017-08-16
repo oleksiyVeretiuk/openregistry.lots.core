@@ -16,6 +16,7 @@ from openregistry.api.models.roles import (
 )
 
 from openregistry.api.interfaces import IORContent
+from .constants import LOT_STATUSES
 
 
 create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions',
@@ -45,28 +46,40 @@ class BaseLot(BaseResourceItem):
     class Options:
         roles = {
             'create': create_role,
-            'draft': view_role,
             'plain': plain_role,
             'edit': edit_role,
-            'waiting': view_role,
-            'edit_waiting': edit_role,
-            'edit_draft': edit_role,
-            'active.pending': view_role,
-            'active.inauction': view_role,
-            'edit_active.pending': blacklist('revisions'),
-            'edit_active.inauction': edit_role,
-            'pending': view_role,
             'view': view_role,
             'listing': listing_role,
-            'Administrator': Administrator_role,
             'default': schematics_default_role,
-            'dissolved': view_role,
-            'edit_dissolved': whitelist(),
+            'Administrator': Administrator_role,
+            # Draft role
+            'draft': view_role,
+            'edit_draft': whitelist('status'),
+            # Pending role
+            'pending': view_role,
+            'edit_pending': edit_role,
+            # Deleted role
             'deleted': view_role,
             'edit_deleted': whitelist(),
-            'invalid': view_role,
-            'edit_invalid': edit_role,
-            'sold': view_role
+            # Verification role
+            'verification': view_role,
+            'edit_verification': whitelist(),
+            # Active.salable role
+            'active.salable':  view_role,
+            'edit_active.salable': whitelist('status'),
+            # Dissolved role
+            'dissolved': view_role,
+            'edit_dissolved': whitelist(),
+            # Active.awaiting role
+            'active.awaiting': view_role,
+            'edit_active.awaiting': whitelist(),
+            # Active.auction role
+            'active.auction': view_role,
+            'edit_active.auction': edit_role,
+            # Sold role
+            'sold': view_role,
+            'bot1': whitelist('status'),
+            'bot2': whitelist('status', 'auctions')
         }
 
     lotID = StringType()  # lotID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
@@ -91,6 +104,10 @@ class BaseLot(BaseResourceItem):
         request = root.request
         if request.authenticated_role == 'Administrator':
             role = 'Administrator'
+        elif request.authenticated_role == 'bot1':
+            role = 'bot1'
+        elif request.authenticated_role == 'bot2':
+            role = 'bot2'
         else:
             role = 'edit_{}'.format(request.context.status)
         return role
@@ -109,10 +126,8 @@ def validate_asset_uniq(assets, *args):
 
 
 class Lot(BaseLot):
-    status = StringType(choices=['draft', 'waiting', 'active.pending',
-                                 'active.inauction', 'sold', 'dissolved',
-                                 'deleted', 'invalid'],
-                        default='waiting')
+    status = StringType(choices=LOT_STATUSES,
+                        default='draft')
     auctions = ListType(MD5Type(), default=list())
     assets = ListType(MD5Type(), required=False, validators=[
         validate_asset_uniq,

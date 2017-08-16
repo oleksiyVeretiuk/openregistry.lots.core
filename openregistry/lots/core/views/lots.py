@@ -47,12 +47,12 @@ class LotsResource(APIResourceListing):
 
         default_status = type(lot).fields['status'].default
         status = self.request.json_body['data'].get('status', default_status)
-        if status in ('draft', 'waiting'):
+        if status in ('draft'):
             lot.status = status
         else:
             self.request.errors.add(
                 'body', 'status',
-                'You can create only in draft or waiting statuses'
+                'You can create only in draft status'
             )
             self.request.errors.status = 403
             return
