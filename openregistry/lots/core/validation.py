@@ -39,3 +39,10 @@ def validate_patch_lot_data(request, error_handler, **kwargs):
     if data.get('status') == default_status and data.get('status') != request.context.status:
         raise_operation_error(request, error_handler, 'Can\'t switch lot to {} status'.format(default_status))
     return validate_data(request, type(request.lot), True, data)
+
+
+def validate_lot_document_update_not_by_author_or_lot_owner(request, error_handler, **kwargs):
+    if request.authenticated_role != (request.context.author or 'lot_owner'):
+        request.errors.add('url', 'role', 'Can update document only author')
+        request.errors.status = 403
+        raise error_handler(request)
