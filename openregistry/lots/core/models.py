@@ -6,7 +6,7 @@ from schematics.exceptions import ValidationError
 from zope.interface import implementer
 from pyramid.security import Allow
 
-from openregistry.api.models.ocds import Organization
+from openregistry.api.models.ocds import Organization, Document
 from openregistry.api.models.schematics_extender import IsoDateTimeType
 from openregistry.api.models.common import BaseResourceItem
 from openregistry.api.models.roles import (
@@ -20,10 +20,10 @@ from .constants import LOT_STATUSES
 
 
 create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions',
-                         'date', 'dateModified', 'lotID',
+                         'date', 'dateModified', 'lotID', 'documents',
                          'status', 'doc_id') + schematics_embedded_role)
 edit_role = (blacklist('owner_token', 'owner', '_attachments',
-                       'revisions', 'date', 'dateModified',
+                       'revisions', 'date', 'dateModified', 'documents',
                        'lotID', 'mode', 'doc_id') + schematics_embedded_role)
 view_role = (blacklist('owner_token',
                        '_attachments', 'revisions') + schematics_embedded_role)
@@ -91,6 +91,7 @@ class BaseLot(BaseResourceItem):
     description_en = StringType()
     description_ru = StringType()
     lotCustodian = ModelType(Organization, required=True)
+    documents = ListType(ModelType(Document), default=list())  # All documents and attachments related to the lot.
 
     create_accreditation = 1
     edit_accreditation = 2
