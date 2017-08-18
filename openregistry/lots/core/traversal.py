@@ -20,8 +20,8 @@ class Root(object):
         (Allow, 'g:brokers', 'edit_lot'),
         (Allow, 'g:Administrator', 'edit_lot'),
         (Allow, 'g:admins', ALL_PERMISSIONS),
-        (Allow, 'g:bot1', 'edit_lot'),
-        (Allow, 'g:bot2', 'edit_lot'),
+        (Allow, 'g:concierge', 'edit_lot'),
+        (Allow, 'g:convoy', 'edit_lot'),
     ]
 
     def __init__(self, request):

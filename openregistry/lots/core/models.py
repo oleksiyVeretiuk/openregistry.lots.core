@@ -78,8 +78,8 @@ class BaseLot(BaseResourceItem):
             'edit_active.auction': edit_role,
             # Sold role
             'sold': view_role,
-            'bot1': whitelist('status'),
-            'bot2': whitelist('status', 'auctions')
+            'concierge': whitelist('status'),
+            'convoy': whitelist('status', 'auctions')
         }
 
     lotID = StringType()  # lotID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
@@ -105,10 +105,10 @@ class BaseLot(BaseResourceItem):
         request = root.request
         if request.authenticated_role == 'Administrator':
             role = 'Administrator'
-        elif request.authenticated_role == 'bot1':
-            role = 'bot1'
-        elif request.authenticated_role == 'bot2':
-            role = 'bot2'
+        elif request.authenticated_role == 'concierge':
+            role = 'concierge'
+        elif request.authenticated_role == 'convoy':
+            role = 'convoy'
         else:
             role = 'edit_{}'.format(request.context.status)
         return role
