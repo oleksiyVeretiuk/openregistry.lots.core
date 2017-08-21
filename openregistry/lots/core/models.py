@@ -130,7 +130,7 @@ class Lot(BaseLot):
     status = StringType(choices=LOT_STATUSES,
                         default='draft')
     auctions = ListType(MD5Type(), default=list())
-    assets = ListType(MD5Type(), required=False, min_size=1,
+    assets = ListType(MD5Type(), required=True, min_size=1,
                       validators=[validate_asset_uniq])
 
     create_accreditation = 1
