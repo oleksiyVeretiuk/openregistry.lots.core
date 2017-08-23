@@ -17,7 +17,8 @@ from openregistry.api.utils import (
     get_revision_changes,
     context_unpack,
     get_now,
-    apply_data_patch
+    apply_data_patch,
+    prepare_revision
 )
 
 from openregistry.lots.core.constants import DEFAULT_LOT_TYPE
@@ -156,31 +157,11 @@ def save_lot(request):
         set_modetest_titles(lot)
     patch = get_revision_changes(lot.serialize("plain"), request.validated['lot_src'])
     if patch:
-        now = get_now()
-        status_changes = [
-            p
-            for p in patch
-            if not p['path'].startswith('/bids/') and p['path'].endswith("/status") and p['op'] == "replace"
-        ]
-        for change in status_changes:
-            obj = resolve_pointer(lot, change['path'].replace('/status', ''))
-            if obj and hasattr(obj, "date"):
-                date_path = change['path'].replace('/status', '/date')
-                if obj.date and not any([p for p in patch if date_path == p['path']]):
-                    patch.append({"op": "replace",
-                                  "path": date_path,
-                                  "value": obj.date.isoformat()})
-                elif not obj.date:
-                    patch.append({"op": "remove", "path": date_path})
-                obj.date = now
-        lot.revisions.append(type(lot).revisions.model_class({
-            'author': request.authenticated_userid,
-            'changes': patch,
-            'rev': lot.rev
-        }))
+        revision = prepare_revision(lot, patch, request.authenticated_userid)
+        lot.revisions.append(type(lot).revisions.model_class(revision))
         old_dateModified = lot.dateModified
         if getattr(lot, 'modified', True):
-            lot.dateModified = now
+            lot.dateModified = get_now()
         try:
             lot.store(request.registry.db)
         except ModelValidationError, e:
