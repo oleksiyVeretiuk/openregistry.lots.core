@@ -1,13 +1,12 @@
-from pyramid.exceptions import URLDecodeError
-from pyramid.compat import decode_path_info
-from cornice.resource import resource
-from jsonpointer import resolve_pointer
-from schematics.exceptions import ModelValidationError
-from pkg_resources import get_distribution
-from couchdb.http import ResourceConflict
 from logging import getLogger
 from functools import partial
 from time import sleep
+from pkg_resources import get_distribution
+from couchdb.http import ResourceConflict
+from schematics.exceptions import ModelValidationError
+from cornice.resource import resource
+from pyramid.compat import decode_path_info
+from pyramid.exceptions import URLDecodeError
 
 
 from openregistry.api.utils import (
@@ -30,8 +29,8 @@ LOGGER = getLogger(PKG.project_name)
 
 
 oplotsresource = partial(resource,
-                           error_handler=error_handler,
-                           factory=factory)
+                         error_handler=error_handler,
+                         factory=factory)
 
 
 def generate_lot_id(ctime, db, server_id=''):

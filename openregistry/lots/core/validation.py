@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from openregistry.api.validation import validate_data, validate_json_data
-from openregistry.api.utils import update_logging_context,  raise_operation_error
+from openregistry.api.utils import update_logging_context, raise_operation_error
 
 
 def validate_lot_data(request, error_handler, **kwargs):

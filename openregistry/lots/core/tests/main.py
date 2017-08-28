@@ -5,9 +5,9 @@ from openregistry.lots.core.tests import lots
 
 
 def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(lots.suite())
-    return suite
+    tests = unittest.TestSuite()
+    tests.addTest(lots.suite())
+    return tests
 
 
 if __name__ == '__main__':

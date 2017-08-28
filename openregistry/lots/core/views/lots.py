@@ -47,7 +47,7 @@ class LotsResource(APIResourceListing):
 
         default_status = type(lot).fields['status'].default
         status = self.request.json_body['data'].get('status', default_status)
-        if status in ('draft'):
+        if status == 'draft':
             lot.status = status
         else:
             self.request.errors.add(
@@ -62,7 +62,8 @@ class LotsResource(APIResourceListing):
         self.request.validated['lot_src'] = {}
         if save_lot(self.request):
             self.LOGGER.info('Created lot {} ({})'.format(lot_id, lot.lotID),
-                        extra=context_unpack(self.request, {'MESSAGE_ID': 'lot_create'}, {'lot_id': lot_id, 'lotID': lot.lotID}))
+                             extra=context_unpack(self.request, {'MESSAGE_ID': 'lot_create'},
+                                                  {'lot_id': lot_id, 'lotID': lot.lotID}))
             self.request.response.status = 201
             self.request.response.headers['Location'] = self.request.route_url('{}:Lot'.format(lot.lotType), lot_id=lot_id)
             return {

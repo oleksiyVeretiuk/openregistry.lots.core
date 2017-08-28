@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from schematics.transforms import whitelist, blacklist
-from schematics.types import BaseType, StringType, MD5Type
-from schematics.types.compound import ModelType, DictType, ListType
+from schematics.types import StringType, MD5Type
+from schematics.types.compound import ModelType, ListType
 from schematics.exceptions import ValidationError
 from zope.interface import implementer
 from pyramid.security import Allow

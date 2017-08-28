@@ -1,4 +1,4 @@
-from pkg_resources import iter_entry_points
+# -*- coding: utf-8 -*-
 from pyramid.interfaces import IRequest
 from openregistry.lots.core.utils import (
     extract_lot, isLot, register_lotType,
