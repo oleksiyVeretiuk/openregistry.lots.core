@@ -48,7 +48,7 @@ def generate_lot_id(ctime, db, server_id=''):
             sleep(1)
         else:
             break
-    return 'UA-{:04}-{:02}-{:02}-{:06}{}'.format(ctime.year,
+    return 'UA-LR-DGF-{:04}-{:02}-{:02}-{:06}{}'.format(ctime.year,
                                                  ctime.month,
                                                  ctime.day,
                                                  index,
