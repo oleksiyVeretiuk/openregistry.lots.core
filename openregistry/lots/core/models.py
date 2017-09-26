@@ -67,6 +67,9 @@ class BaseLot(BaseResourceItem):
             # Active.salable role
             'active.salable':  view_role,
             'edit_active.salable': whitelist('status'),
+            # pending.dissolution role
+            'pending.dissolution': view_role,
+            'edit_pending.dissolution': whitelist('status'),
             # Dissolved role
             'dissolved': view_role,
             'edit_dissolved': whitelist(),

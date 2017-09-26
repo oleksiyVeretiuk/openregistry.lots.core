@@ -2,5 +2,5 @@
 DEFAULT_LOT_TYPE = 'basic'
 
 LOT_STATUSES = ["draft", "pending", "deleted", "verification",
-                "active.salable", "dissolved", "active.awaiting",
+                "active.salable", "pending.dissolution", "dissolved", "active.awaiting",
                 "active.auction", "sold"]
