@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '0.1.dev1'
+version = '0.1'
 
 entry_points = {
     'openregistry.api.plugins': [
