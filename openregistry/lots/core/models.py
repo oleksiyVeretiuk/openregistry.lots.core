@@ -86,7 +86,7 @@ class BaseLot(BaseResourceItem):
         }
 
     lotID = StringType()  # lotID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
-    lotIdentifier = StringType(required=True)
+    lotIdentifier = StringType(required=True, min_length=1)
     date = IsoDateTimeType()
     title = StringType(required=True)
     title_en = StringType()
