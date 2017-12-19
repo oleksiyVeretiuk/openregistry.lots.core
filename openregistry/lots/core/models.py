@@ -64,6 +64,9 @@ class BaseLot(BaseResourceItem):
             # Verification role
             'verification': view_role,
             'edit_verification': whitelist(),
+            # Recomposed role
+            'recomposed': view_role,
+            'edit_recomposed': whitelist(),
             # Active.salable role
             'active.salable':  view_role,
             'edit_active.salable': whitelist('status'),
