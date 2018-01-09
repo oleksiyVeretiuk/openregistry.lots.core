@@ -82,6 +82,9 @@ class BaseLot(BaseResourceItem):
             # Active.auction role
             'active.auction': view_role,
             'edit_active.auction': edit_role,
+            # pending.sold role
+            'pending.sold': view_role,
+            'edit.pending.sold': whitelist(),
             # Sold role
             'sold': view_role,
             'concierge': whitelist('status'),
