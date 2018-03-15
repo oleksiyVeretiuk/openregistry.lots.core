@@ -4,10 +4,10 @@ from openregistry.lots.core.utils import (
     extract_lot, isLot, register_lotType,
     lot_from_data, SubscribersPicker
 )
-from openregistry.api.interfaces import IContentConfigurator
+from openprocurement.api.interfaces import IContentConfigurator
 from openregistry.lots.core.models import ILot
 from openregistry.lots.core.adapters import LotConfigurator
-from openregistry.api.utils import load_plugins
+from openprocurement.api.utils import load_plugins
 
 
 def includeme(config):

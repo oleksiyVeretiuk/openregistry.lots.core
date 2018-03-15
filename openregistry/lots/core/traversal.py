@@ -5,7 +5,7 @@ from pyramid.security import (
     Allow,
     Everyone,
 )
-from openregistry.api.traversal import get_item
+from openprocurement.api.traversal import get_item
 
 
 class Root(object):

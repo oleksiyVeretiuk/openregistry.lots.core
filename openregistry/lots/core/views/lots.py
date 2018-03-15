@@ -4,7 +4,7 @@ from openregistry.lots.core.design import (
     FIELDS, VIEW_MAP, CHANGES_VIEW_MAP, FEED
 )
 
-from openregistry.api.utils import (
+from openprocurement.api.utils import (
     get_now, generate_id, json_view, set_ownership,
     context_unpack, APIResourceListing
 )

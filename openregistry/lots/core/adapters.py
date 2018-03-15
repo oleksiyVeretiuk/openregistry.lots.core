@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openregistry.api.adapters import ContentConfigurator
+from openprocurement.api.adapters import ContentConfigurator
 
 
 class LotConfigurator(ContentConfigurator):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from couchdb.design import ViewDefinition
-from openregistry.api import design
+from openprocurement.api import design
 
 
 FIELDS = [

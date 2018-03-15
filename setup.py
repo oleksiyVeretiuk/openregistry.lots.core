@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 version = '0.1'
 
 entry_points = {
-    'openregistry.api.plugins': [
+    'openprocurement.api.plugins': [
         'lots.core = openregistry.lots.core.includeme:includeme'
     ],
     'openregistry.tests': [
