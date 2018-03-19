@@ -9,7 +9,7 @@ from pyramid.compat import decode_path_info
 from pyramid.exceptions import URLDecodeError
 
 
-from openregistry.api.utils import (
+from openprocurement.api.utils import (
     error_handler,
     update_logging_context,
     set_modetest_titles,

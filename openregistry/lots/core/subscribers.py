@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from pyramid.events import subscriber
 from pyramid.events import ContextFound
-from openregistry.api.events import ErrorDesctiptorEvent
-from openregistry.api.utils import update_logging_context
+from openprocurement.api.events import ErrorDesctiptorEvent
+from openprocurement.api.utils import update_logging_context
 
 
 @subscriber(ErrorDesctiptorEvent)

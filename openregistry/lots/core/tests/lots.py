@@ -2,7 +2,7 @@
 import os
 import unittest
 from openregistry.lots.core.tests.base import BaseLotWebTest
-from openregistry.api.tests.blanks.mixins import CoreResourceTestMixin
+from openprocurement.api.tests.blanks.mixins import CoreResourceTestMixin
 
 
 class LotResourceTest(BaseLotWebTest, CoreResourceTestMixin):

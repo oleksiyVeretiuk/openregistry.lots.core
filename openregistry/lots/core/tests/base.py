@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-from openregistry.api.tests.base import BaseResourceWebTest
+from openprocurement.api.tests.base import BaseResourceWebTest
 
 
 now = datetime.now()
