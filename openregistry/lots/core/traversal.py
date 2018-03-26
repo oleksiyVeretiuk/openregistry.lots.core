@@ -43,5 +43,9 @@ def factory(request):
         request.validated['lot_src'] = lot.serialize('plain')
     if request.matchdict.get('document_id'):
         return get_item(lot, 'document', request)
+    if request.matchdict.get('item_id'):
+        return get_item(lot, 'item', request)
+    if request.matchdict.get('publication_id'):
+        return get_item(lot, 'publication', request)
     request.validated['id'] = request.matchdict['lot_id']
     return lot
