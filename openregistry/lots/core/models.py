@@ -6,10 +6,10 @@ from schematics.exceptions import ValidationError
 from zope.interface import implementer
 from pyramid.security import Allow
 
-from openprocurement.api.registry_models.ocds import Organization, Document
-from openprocurement.api.registry_models.schematics_extender import IsoDateTimeType
-from openprocurement.api.registry_models.common import BaseResourceItem
-from openprocurement.api.registry_models.roles import (
+from openprocurement.api.models.registry_models.ocds import Organization, Document
+from openprocurement.api.models.schematics_extender import IsoDateTimeType
+from openprocurement.api.models.registry_models.common import BaseResourceItem
+from openprocurement.api.models.registry_models.roles import (
     schematics_embedded_role,
     schematics_default_role,
     plain_role, listing_role,
