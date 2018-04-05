@@ -6,7 +6,7 @@ from openprocurement.api.models.registry_models.roles import (
     plain_role, listing_role,
 )
 from openprocurement.api.models.registry_models.common import BaseResourceItem
-from openprocurement.api.models.registry_models.ocds import Organization, Document
+from openprocurement.api.models.registry_models.ocds import Organization, baseDocument as Document
 from openprocurement.api.models.schematics_extender import IsoDateTimeType
 from pyramid.security import Allow
 from schematics.exceptions import ValidationError
