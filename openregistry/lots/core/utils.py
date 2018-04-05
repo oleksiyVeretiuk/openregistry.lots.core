@@ -150,29 +150,35 @@ def lot_serialize(request, lot_data, fields):
     return dict([(i, j) for i, j in lot.serialize(lot.status).items() if i in fields])
 
 
+def store_lot(lot, patch, request):
+    revision = prepare_revision(lot, patch, request.authenticated_userid)
+    lot.revisions.append(type(lot).revisions.model_class(revision))
+    old_dateModified = lot.dateModified
+    if getattr(lot, 'modified', True):
+        lot.dateModified = get_now()
+    try:
+        lot.store(request.registry.db)
+    except ModelValidationError, e:
+        for i in e.message:
+            request.errors.add('body', i, e.message[i])
+        request.errors.status = 422
+    except ResourceConflict, e:  # pragma: no cover
+        request.errors.add('body', 'data', str(e))
+        request.errors.status = 409
+    except Exception, e:  # pragma: no cover
+        request.errors.add('body', 'data', str(e))
+    else:
+        LOGGER.info(
+            'Saved lot {}: dateModified {} -> {}'.format(lot.id, old_dateModified and old_dateModified.isoformat(),
+                                                         lot.dateModified.isoformat()),
+            extra=context_unpack(request, {'MESSAGE_ID': 'save_lot'}, {'RESULT': lot.rev}))
+        return True
+
+
 def save_lot(request):
     lot = request.validated['lot']
     if lot.mode == u'test':
         set_modetest_titles(lot)
     patch = get_revision_changes(lot.serialize("plain"), request.validated['lot_src'])
     if patch:
-        revision = prepare_revision(lot, patch, request.authenticated_userid)
-        lot.revisions.append(type(lot).revisions.model_class(revision))
-        old_dateModified = lot.dateModified
-        if getattr(lot, 'modified', True):
-            lot.dateModified = get_now()
-        try:
-            lot.store(request.registry.db)
-        except ModelValidationError, e:
-            for i in e.message:
-                request.errors.add('body', i, e.message[i])
-            request.errors.status = 422
-        except ResourceConflict, e:  # pragma: no cover
-            request.errors.add('body', 'data', str(e))
-            request.errors.status = 409
-        except Exception, e:  # pragma: no cover
-            request.errors.add('body', 'data', str(e))
-        else:
-            LOGGER.info('Saved lot {}: dateModified {} -> {}'.format(lot.id, old_dateModified and old_dateModified.isoformat(), lot.dateModified.isoformat()),
-                        extra=context_unpack(request, {'MESSAGE_ID': 'save_lot'}, {'RESULT': lot.rev}))
-            return True
+        return store_lot(lot, patch, request)
