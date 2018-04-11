@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from openprocurement.api.constants import (
-    TZ,
-    DOCUMENT_TYPES,
-    ROUTE_PREFIX
+    TZ,  # noqa forwarded import
+    DOCUMENT_TYPES,  # noqa forwarded import
+    ROUTE_PREFIX  # noqa forwarded import
 )
 
 
