@@ -10,6 +10,14 @@ from pyramid.exceptions import URLDecodeError
 
 
 from openprocurement.api.utils import (
+    get_file,
+    update_file_content_type,
+    json_view,
+    context_unpack,
+    APIResource,
+)
+
+from openprocurement.api.utils import (
     error_handler,
     update_logging_context,
     set_modetest_titles,
@@ -17,7 +25,9 @@ from openprocurement.api.utils import (
     context_unpack,
     get_now,
     apply_data_patch,
-    prepare_revision
+    prepare_revision,
+    raise_operation_error,
+    update_logging_context
 )
 
 from openregistry.lots.core.constants import DEFAULT_LOT_TYPE

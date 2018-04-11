@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-from openprocurement.api.tests.base import BaseResourceWebTest
-
+from openprocurement.api.tests.base import (
+    create_blacklist,
+    PrefixedRequestClass,
+    DumpsTestAppwebtest,
+    BaseResourceWebTest,
+    BaseWebTest,
+    snitch
+)
 
 now = datetime.now()
 

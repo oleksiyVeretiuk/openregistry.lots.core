@@ -3,11 +3,39 @@ from openprocurement.api.interfaces import IORContent
 from openprocurement.api.models.registry_models.roles import (
     schematics_embedded_role,
     schematics_default_role,
-    plain_role, listing_role,
+    plain_role,
+    listing_role
 )
 from openprocurement.api.models.registry_models.common import BaseResourceItem
 from openprocurement.api.models.registry_models.ocds import Organization, Document
 from openprocurement.api.models.schematics_extender import IsoDateTimeType
+
+from openprocurement.api.models.auction_models.models import (
+    Value
+)
+from openprocurement.api.models.models import (
+    Guarantee,
+    Period
+)
+from openprocurement.api.models.registry_models.ocds import (
+    Identifier as BaseIdentifier,
+    Document as BaseDocument,
+    Address,
+    ContactPoint,
+    Item as BaseItem,
+    BaseUnit,
+    Organization,
+    ItemClassification,
+    Classification
+)
+from openprocurement.api.models.schematics_extender import (
+    Model,
+    IsoDateTimeType,
+    IsoDurationType,
+    DecimalType
+)
+
+from openprocurement.api.constants import IDENTIFIER_CODES
 from pyramid.security import Allow
 from schematics.exceptions import ValidationError
 from schematics.transforms import whitelist, blacklist
