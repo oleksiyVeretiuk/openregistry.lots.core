@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*-# noqa forwarded import coding: utf-8 -*-
 from openprocurement.api.interfaces import IORContent
 from openprocurement.api.models.registry_models.roles import (
     schematics_embedded_role,
@@ -7,35 +7,33 @@ from openprocurement.api.models.registry_models.roles import (
     listing_role
 )
 from openprocurement.api.models.registry_models.common import BaseResourceItem
-from openprocurement.api.models.registry_models.ocds import Organization, Document
-from openprocurement.api.models.schematics_extender import IsoDateTimeType
 
 from openprocurement.api.models.auction_models.models import (
-    Value
+    Value  # noqa forwarded import
 )
 from openprocurement.api.models.models import (
-    Guarantee,
-    Period
+    Guarantee,  # noqa forwarded import
+    Period  # noqa forwarded import
 )
 from openprocurement.api.models.registry_models.ocds import (
-    Identifier as BaseIdentifier,
-    Document as BaseDocument,
-    Address,
-    ContactPoint,
-    Item as BaseItem,
-    BaseUnit,
+    Identifier as BaseIdentifier,  # noqa forwarded import
+    Document as BaseDocument,  # noqa forwarded import
+    Address,  # noqa forwarded import
+    ContactPoint,  # noqa forwarded import
+    Item as BaseItem,  # noqa forwarded import
+    BaseUnit,  # noqa forwarded import
     Organization,
-    ItemClassification,
-    Classification
+    ItemClassification,  # noqa forwarded import
+    Classification  # noqa forwarded import
 )
 from openprocurement.api.models.schematics_extender import (
     Model,
     IsoDateTimeType,
-    IsoDurationType,
-    DecimalType
+    IsoDurationType,  # noqa forwarded import
+    DecimalType  # noqa forwarded import
 )
 
-from openprocurement.api.constants import IDENTIFIER_CODES
+from openprocurement.api.constants import IDENTIFIER_CODES  # noqa forwarded import
 from pyramid.security import Allow
 from schematics.exceptions import ValidationError
 from schematics.transforms import whitelist, blacklist
@@ -127,7 +125,7 @@ class BaseLot(BaseResourceItem):
     description_en = StringType()
     description_ru = StringType()
     lotCustodian = ModelType(Organization, required=True)
-    documents = ListType(ModelType(Document), default=list())  # All documents and attachments related to the lot.
+    documents = ListType(ModelType(BaseDocument), default=list())  # All documents and attachments related to the lot.
 
     create_accreditation = 1
     edit_accreditation = 2

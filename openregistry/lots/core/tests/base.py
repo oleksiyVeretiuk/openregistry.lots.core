@@ -2,12 +2,12 @@
 from datetime import datetime
 
 from openprocurement.api.tests.base import (
-    create_blacklist,
-    PrefixedRequestClass,
-    DumpsTestAppwebtest,
+    create_blacklist,  # noqa forwarded import
+    PrefixedRequestClass,  # noqa forwarded import
+    DumpsTestAppwebtest,  # noqa forwarded import
     BaseResourceWebTest,
-    BaseWebTest,
-    snitch
+    BaseWebTest,  # noqa forwarded import
+    snitch  # noqa forwarded import
 )
 
 now = datetime.now()
