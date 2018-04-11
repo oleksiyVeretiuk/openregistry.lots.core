@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*-# noqa forwarded import coding: utf-8 -*-
 from openprocurement.api.interfaces import IORContent
 from openprocurement.api.models.registry_models.roles import (
     schematics_embedded_role,
