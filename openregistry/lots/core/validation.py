@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 from openprocurement.api.validation import validate_data, validate_json_data
-from openprocurement.api.utils import update_logging_context, raise_operation_error
-
+from .utils import update_logging_context, raise_operation_error
+from openprocurement.api.validation import (
+    validate_file_upload,  # noqa forwarded import
+    validate_document_data,  # noqa forwarded import
+    validate_change_status,  # noqa forwarded import
+    validate_patch_document_data,  # noqa forwarded import
+)
 
 def validate_lot_data(request, error_handler, **kwargs):
     update_logging_context(request, {'lot_id': '__new__'})
