@@ -17,10 +17,10 @@ from openprocurement.api.models.models import (
 )
 from openprocurement.api.models.registry_models.ocds import (
     Identifier as BaseIdentifier,  # noqa forwarded import
-    Document as BaseDocument,  # noqa forwarded import
+    Document,  # noqa forwarded import
     Address,  # noqa forwarded import
     ContactPoint,  # noqa forwarded import
-    Item as BaseItem,  # noqa forwarded import
+    Item,  # noqa forwarded import
     BaseUnit,  # noqa forwarded import
     Organization,
     ItemClassification,  # noqa forwarded import
@@ -125,7 +125,7 @@ class BaseLot(BaseResourceItem):
     description_en = StringType()
     description_ru = StringType()
     lotCustodian = ModelType(Organization, required=True)
-    documents = ListType(ModelType(BaseDocument), default=list())  # All documents and attachments related to the lot.
+    documents = ListType(ModelType(Document), default=list())  # All documents and attachments related to the lot.
 
     create_accreditation = 1
     edit_accreditation = 2
