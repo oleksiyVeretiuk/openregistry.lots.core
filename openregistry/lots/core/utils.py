@@ -10,14 +10,19 @@ from pyramid.exceptions import URLDecodeError
 
 
 from openprocurement.api.utils import (
+    get_file,  # noqa forwarded import
+    update_file_content_type,  # noqa forwarded import
+    json_view,  # noqa forwarded import
+    context_unpack,
+    APIResource,  # noqa forwarded import
     error_handler,
-    update_logging_context,
     set_modetest_titles,
     get_revision_changes,
-    context_unpack,
     get_now,
     apply_data_patch,
-    prepare_revision
+    prepare_revision,
+    raise_operation_error,  # noqa forwarded import
+    update_logging_context
 )
 
 from openregistry.lots.core.constants import DEFAULT_LOT_TYPE
