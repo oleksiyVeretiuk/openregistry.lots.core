@@ -24,7 +24,13 @@ from openprocurement.api.models.registry_models.ocds import (
     BaseUnit,  # noqa forwarded import
     Organization,
     ItemClassification,  # noqa forwarded import
-    Classification  # noqa forwarded import
+    Classification,  # noqa forwarded import
+    LokiDocument,  # noqa forwarded import
+    LokiItem,  # noqa forwarded import
+    Decision,  # noqa forwarded import
+    AssetCustodian,  # noqa forwarded import
+    AssetHolder  # noqa forwarded import
+
 )
 from openprocurement.api.models.schematics_extender import (
     Model,
