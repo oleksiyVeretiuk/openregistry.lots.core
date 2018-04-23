@@ -16,6 +16,7 @@ from openregistry.lots.core.validation import (
     validate_lot_data,
     validate_post_lot_role,
 )
+from openregistry.lots.core.interfaces import ILotManager
 
 
 @oplotsresource(name='Lots',
@@ -38,6 +39,10 @@ class LotsResource(APIResourceListing):
                validators=(validate_lot_data, validate_post_lot_role))
     def post(self):
         """This API request is targeted to creating new Lot."""
+        self.request.registry.getAdapter(
+            self.request.validated['lot'],
+            ILotManager
+        ).create_lot(self.request)
         lot_id = generate_id()
         lot = self.request.validated['lot']
         lot.id = lot_id
