@@ -7,10 +7,10 @@ from openregistry.lots.core.utils import (
 from openprocurement.api.interfaces import IContentConfigurator
 from openregistry.lots.core.models import ILot
 from openregistry.lots.core.adapters import LotConfigurator
-from openprocurement.api.utils import load_plugins
+from openprocurement.api.utils import configure_plugins
 
 
-def includeme(config):
+def includeme(config, plugin_config=None):
     from openregistry.lots.core.design import add_design
     add_design()
     config.add_request_method(extract_lot, 'lot', reify=True)
@@ -28,8 +28,10 @@ def includeme(config):
                                     IContentConfigurator)
 
     # search for plugins
-    settings = config.get_settings()
-    plugins = settings.get('plugins') and settings['plugins'].split(',')
-    load_plugins(config,
-                 group='openregistry.lots.core.plugins',
-                 plugins=plugins)
+    if plugin_config and plugin_config.get('plugins'):
+        for name in plugin_config['plugins']:
+            package_config = plugin_config['plugins'][name]
+            configure_plugins(
+                config, {name: package_config},
+                'openregistry.lots.core.plugins', name
+            )
