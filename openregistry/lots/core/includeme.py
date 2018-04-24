@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from pyramid.interfaces import IRequest
 from openregistry.lots.core.utils import (
     extract_lot, isLot, register_lotType,
@@ -8,6 +9,8 @@ from openprocurement.api.interfaces import IContentConfigurator
 from openregistry.lots.core.models import ILot
 from openregistry.lots.core.adapters import LotConfigurator
 from openprocurement.api.utils import configure_plugins
+
+LOGGER = logging.getLogger(__name__)
 
 
 def includeme(config, plugin_config=None):
@@ -26,6 +29,8 @@ def includeme(config, plugin_config=None):
     config.scan("openregistry.lots.core.subscribers")
     config.registry.registerAdapter(LotConfigurator, (ILot, IRequest),
                                     IContentConfigurator)
+
+    LOGGER.info("Included openprocurement.lots.core plugin", extra={'MESSAGE_ID': 'included_plugin'})
 
     # search for plugins
     if plugin_config and plugin_config.get('plugins'):
