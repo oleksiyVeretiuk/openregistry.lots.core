@@ -41,11 +41,8 @@ def factory(request):
     request.validated['resource_type'] = "lot"
     if request.method != 'GET':
         request.validated['lot_src'] = lot.serialize('plain')
-    if request.matchdict.get('publication_id'):
-        if request.matchdict.get('document_id'):
-            publication = get_item(lot, 'publication', request)
-            return get_item(publication, 'document', request)
-        return get_item(lot, 'publication', request)
+    if request.matchdict.get('auction_id'):
+        return get_item(lot, 'auction', request)
     if request.matchdict.get('document_id'):
         return get_item(lot, 'document', request)
     if request.matchdict.get('item_id'):
