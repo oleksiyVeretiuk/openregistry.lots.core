@@ -6,7 +6,6 @@ from openprocurement.api.constants import (
     ROUTE_PREFIX,  # noqa forwarded import
     IDENTIFIER_CODES, # noqa forwarded import
     SANDBOX_MODE, # noqa forwarded import
-    SELLOUT_AUCTION_STATUSES # noqa forwarded import
 )
 from openprocurement.api.models.registry_models.ocds import LOKI_DOCUMENT_TYPES # noqa forwarded import
 
