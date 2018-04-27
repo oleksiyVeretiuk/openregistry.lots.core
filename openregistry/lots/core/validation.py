@@ -10,7 +10,6 @@ from openprocurement.api.validation import (
 
 def validate_lot_data(request, error_handler, **kwargs):
     update_logging_context(request, {'lot_id': '__new__'})
-
     data = validate_json_data(request)
     model = request.lot_from_data(data, create=False)
     if not any([request.check_accreditation(acc) for acc in iter(str(model.create_accreditation))]):
@@ -51,3 +50,11 @@ def validate_lot_document_update_not_by_author_or_lot_owner(request, error_handl
         request.errors.add('url', 'role', 'Can update document only author')
         request.errors.status = 403
         raise error_handler(request)
+
+
+def validate_update_item_in_not_allowed_status(request, error_handler, **kwargs):
+    status = request.validated['lot_status']
+    editing_statuses = request.content_configurator.item_editing_allowed_statuses
+    if status not in editing_statuses:
+        raise_operation_error(request, error_handler,
+                              'Can\'t update item in current ({}) lot status'.format(status))

@@ -36,7 +36,7 @@ class LotsResource(APIResourceListing):
         self.log_message_id = 'lot_list_custom'
 
     @json_view(content_type="application/json", permission='create_lot',
-               validators=(validate_lot_data, validate_post_lot_role))
+               validators=(validate_lot_data, ))
     def post(self):
         """This API request is targeted to creating new Lot."""
         self.request.registry.getAdapter(
