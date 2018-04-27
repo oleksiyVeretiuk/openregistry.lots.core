@@ -12,6 +12,6 @@ from openprocurement.api.models.registry_models.ocds import LOKI_DOCUMENT_TYPES 
 
 DEFAULT_LOT_TYPE = 'basic'
 
-LOT_STATUSES = ["draft", "pending", "deleted", "verification", "recomposed",
+LOT_STATUSES = ["draft", "pending", "deleted", "pending.deleted", "verification", "recomposed",
                 "active.salable", "pending.dissolution", "dissolved", "active.awaiting",
                 "active.auction", "pending.sold", "sold"]

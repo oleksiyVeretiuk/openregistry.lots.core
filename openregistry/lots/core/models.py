@@ -88,6 +88,9 @@ class BaseLot(BaseResourceItem):
             # Pending role
             'pending': view_role,
             'edit_pending': edit_role,
+            # Pending.deleted role
+            'pending.deleted': view_role,
+            'edit_pending.deleted': whitelist(),
             # Deleted role
             'deleted': view_role,
             'edit_deleted': whitelist(),
