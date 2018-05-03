@@ -70,7 +70,7 @@ class LotsResource(APIResourceListing):
                              extra=context_unpack(self.request, {'MESSAGE_ID': 'lot_create'},
                                                   {'lot_id': lot_id, 'lotID': lot.lotID}))
             self.request.response.status = 201
-            self.request.response.headers['Location'] = self.request.route_url('{}:Lot'.format(lot.lotType), lot_id=lot_id)
+            self.request.response.headers['Location'] = self.request.route_url('Lot', lot_id=lot_id)
             return {
                 'data': lot.serialize(lot.status),
                 'access': acc
