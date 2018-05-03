@@ -1,51 +1,49 @@
 # -*- coding: utf-8 -*-
-from openprocurement.api.interfaces import IORContent
-from openprocurement.api.models.registry_models.roles import (
-    schematics_embedded_role,
-    schematics_default_role,
-    plain_role,
-    listing_role
-)
-from openprocurement.api.models.registry_models.common import BaseResourceItem
-
-from openprocurement.api.models.auction_models.models import (
-    Value  # noqa forwarded import
-)
-from openprocurement.api.models.models import (
-    Guarantee,  # noqa forwarded import
-    Period  # noqa forwarded import
-)
-from openprocurement.api.models.registry_models.ocds import (
-    Identifier as BaseIdentifier,  # noqa forwarded import
-    Document,  # noqa forwarded import
-    Address,  # noqa forwarded import
-    ContactPoint,  # noqa forwarded import
-    Item,  # noqa forwarded import
-    BaseUnit,  # noqa forwarded import
-    Organization,
-    ItemClassification,  # noqa forwarded import
-    Classification,  # noqa forwarded import
-    LokiDocument,  # noqa forwarded import
-    LokiItem,  # noqa forwarded import
-    Decision,  # noqa forwarded import
-    AssetCustodian,  # noqa forwarded import
-    AssetHolder  # noqa forwarded import
-
-)
-from openprocurement.api.models.schematics_extender import (
-    Model,
-    IsoDateTimeType,
-    IsoDurationType,  # noqa forwarded import
-    DecimalType  # noqa forwarded import
-)
-
-from openprocurement.api.constants import IDENTIFIER_CODES  # noqa forwarded import
 from pyramid.security import Allow
 from schematics.exceptions import ValidationError
 from schematics.transforms import whitelist, blacklist
 from schematics.types import StringType, MD5Type
 from schematics.types.compound import ModelType, ListType
 from zope.interface import implementer
+
+from openprocurement.api.constants import IDENTIFIER_CODES  # noqa forwarded import
+from openprocurement.api.interfaces import IORContent
+from openprocurement.api.models.auction_models import Value  # noqa forwarded import
+from openprocurement.api.models.common import (
+    BaseResourceItem,
+    Guarantee,  # noqa forwarded import
+    Period,  # noqa forwarded import
+    Classification,  # noqa forwarded import
+    BaseUnit,  # noqa forwarded import
+    Address,  # noqa forwarded import
+    ContactPoint,  # noqa forwarded import
+)
+from openprocurement.api.models.ocds import (
+    Identifier as BaseIdentifier,  # noqa forwarded import
+    Document,  # noqa forwarded import
+    Item,  # noqa forwarded import
+    Organization,
+    ItemClassification,  # noqa forwarded import
+)
+from openprocurement.api.models.registry_models import (
+    LokiDocument,  # noqa forwarded import
+    LokiItem,  # noqa forwarded import
+    Decision,  # noqa forwarded import
+    AssetCustodian,  # noqa forwarded import
+    AssetHolder  # noqa forwarded import
+)
+from openprocurement.api.models.roles import (
+    schematics_embedded_role,
+    schematics_default_role,
+    plain_role,
+    listing_role
+)
+from openprocurement.api.models.schematics_extender import (
+    Model,  # noqa forwarded import
+    IsoDateTimeType,
+    IsoDurationType,  # noqa forwarded import
+    DecimalType  # noqa forwarded import
+)
 
 from .constants import LOT_STATUSES
 
