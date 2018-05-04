@@ -33,4 +33,4 @@ def includeme(config, plugin_map):
     LOGGER.info("Included openprocurement.lots.core plugin", extra={'MESSAGE_ID': 'included_plugin'})
 
     # search for plugins
-    get_evenly_plugins(config, plugin_map['plugins'], 'openprocurement.lots.core.plugins')
+    get_evenly_plugins(config, plugin_map['plugins'], 'openregistry.lots.core.plugins')
