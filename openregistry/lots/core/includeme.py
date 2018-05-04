@@ -5,15 +5,16 @@ from openregistry.lots.core.utils import (
     extract_lot, isLot, register_lotType,
     lot_from_data, SubscribersPicker
 )
+from openprocurement.api.app import get_evenly_plugins
 from openprocurement.api.interfaces import IContentConfigurator
-from openregistry.lots.core.models import ILot
+from openprocurement.api.utils import get_content_configurator
 from openregistry.lots.core.adapters import LotConfigurator
-from openprocurement.api.utils import configure_plugins
+from openregistry.lots.core.models import ILot
 
 LOGGER = logging.getLogger(__name__)
 
 
-def includeme(config, plugin_config=None):
+def includeme(config, plugin_map):
     from openregistry.lots.core.design import add_design
     add_design()
     config.add_request_method(extract_lot, 'lot', reify=True)
@@ -33,10 +34,4 @@ def includeme(config, plugin_config=None):
     LOGGER.info("Included openprocurement.lots.core plugin", extra={'MESSAGE_ID': 'included_plugin'})
 
     # search for plugins
-    if plugin_config and plugin_config.get('plugins'):
-        for name in plugin_config['plugins']:
-            package_config = plugin_config['plugins'][name]
-            configure_plugins(
-                config, {name: package_config},
-                'openregistry.lots.core.plugins', name
-            )
+    get_evenly_plugins(config, plugin_map['plugins'], 'openprocurement.lots.core.plugins')
