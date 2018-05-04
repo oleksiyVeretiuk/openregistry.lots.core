@@ -7,7 +7,6 @@ from openregistry.lots.core.utils import (
 )
 from openprocurement.api.app import get_evenly_plugins
 from openprocurement.api.interfaces import IContentConfigurator
-from openprocurement.api.utils import get_content_configurator
 from openregistry.lots.core.adapters import LotConfigurator
 from openregistry.lots.core.models import ILot
 
