@@ -17,6 +17,8 @@ from openprocurement.api.models.common import (
     BaseUnit,  # noqa forwarded import
     Address,  # noqa forwarded import
     ContactPoint,  # noqa forwarded import
+    BankAccount,  # noqa forwarded import
+    AuctionParameters,  # noqa forwarded import
 )
 from openprocurement.api.models.ocds import (
     Identifier as BaseIdentifier,  # noqa forwarded import
