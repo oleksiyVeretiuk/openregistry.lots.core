@@ -15,9 +15,10 @@ cache:
   directories:
     - eggs
 before_install:
-  - pip install setuptools==36.0.1
+  - pip install setuptools==36.0.1 flake8
   - python2 bootstrap.py
 install:
+  - flake8 --config .flake8
   - bin/buildout -N
 script:
   - bin/nosetests
