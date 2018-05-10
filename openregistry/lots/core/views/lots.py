@@ -14,7 +14,6 @@ from openregistry.lots.core.utils import (
 )
 from openregistry.lots.core.validation import (
     validate_lot_data,
-    validate_post_lot_role,
 )
 from openregistry.lots.core.interfaces import ILotManager
 

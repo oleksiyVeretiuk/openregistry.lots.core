@@ -9,7 +9,7 @@ from pyramid.compat import decode_path_info
 from pyramid.exceptions import URLDecodeError
 
 
-from openprocurement.api.utils import (
+from openprocurement.api.utils import (  # noqa: F401
     get_file,  # noqa forwarded import
     calculate_business_date,  # noqa forwarded import
     update_file_content_type,  # noqa forwarded import

@@ -9,7 +9,7 @@ from zope.interface import implementer
 from openprocurement.api.constants import IDENTIFIER_CODES  # noqa forwarded import
 from openprocurement.api.interfaces import IORContent
 from openprocurement.api.models.auction_models import Value  # noqa forwarded import
-from openprocurement.api.models.common import (
+from openprocurement.api.models.common import (  # noqa: F401
     BaseResourceItem,
     Guarantee,  # noqa forwarded import
     Period,  # noqa forwarded import
@@ -18,14 +18,14 @@ from openprocurement.api.models.common import (
     Address,  # noqa forwarded import
     ContactPoint,  # noqa forwarded import
 )
-from openprocurement.api.models.ocds import (
+from openprocurement.api.models.ocds import (  # noqa: F401
     Identifier as BaseIdentifier,  # noqa forwarded import
     Document,  # noqa forwarded import
     Item,  # noqa forwarded import
     Organization,
     ItemClassification,  # noqa forwarded import
 )
-from openprocurement.api.models.registry_models import (
+from openprocurement.api.models.registry_models import (  # noqa: F401
     LokiDocument,  # noqa forwarded import
     LokiItem,  # noqa forwarded import
     Decision,  # noqa forwarded import
@@ -38,7 +38,7 @@ from openprocurement.api.models.roles import (
     plain_role,
     listing_role
 )
-from openprocurement.api.models.schematics_extender import (
+from openprocurement.api.models.schematics_extender import (  # noqa: F401
     Model,  # noqa forwarded import
     IsoDateTimeType,
     IsoDurationType,  # noqa forwarded import
