@@ -54,11 +54,13 @@ def generate_lot_id(ctime, db, server_id=''):
             sleep(1)
         else:
             break
-    return 'UA-LR-DGF-{:04}-{:02}-{:02}-{:06}{}'.format(ctime.year,
-                                                 ctime.month,
-                                                 ctime.day,
-                                                 index,
-                                                 server_id and '-' + server_id)
+    return 'UA-LR-DGF-{:04}-{:02}-{:02}-{:06}{}'.format(
+                                                ctime.year,
+                                                ctime.month,
+                                                ctime.day,
+                                                index,
+                                                server_id and '-' + server_id
+                                            )
 
 
 def extract_lot(request):
@@ -177,7 +179,7 @@ def store_lot(lot, patch, request):
         LOGGER.info(
             'Saved lot {lot_id}: dateModified {old_dateModified} -> {new_dateModified}'.format(
                 lot_id=lot.id,
-                old_dateModified = old_dateModified and old_dateModified.isoformat(),
+                old_dateModified=old_dateModified and old_dateModified.isoformat(),
                 new_dateModified=lot.dateModified.isoformat()),
             extra=context_unpack(request, {'MESSAGE_ID': 'save_lot'}, {'RESULT': lot.rev}))
         return True

@@ -8,6 +8,7 @@ from openprocurement.api.validation import (
     validate_patch_document_data,  # noqa forwarded import
 )
 
+
 def validate_lot_data(request, error_handler, **kwargs):
     update_logging_context(request, {'lot_id': '__new__'})
     data = validate_json_data(request)
