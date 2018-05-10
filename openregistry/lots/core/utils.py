@@ -175,8 +175,10 @@ def store_lot(lot, patch, request):
         request.errors.add('body', 'data', str(e))
     else:
         LOGGER.info(
-            'Saved lot {}: dateModified {} -> {}'.format(lot.id, old_dateModified and old_dateModified.isoformat(),
-                                                         lot.dateModified.isoformat()),
+            'Saved lot {lot_id}: dateModified {old_dateModified} -> {new_dateModified}'.format(
+                lot_id=lot.id,
+                old_dateModified = old_dateModified and old_dateModified.isoformat(),
+                new_dateModified=lot.dateModified.isoformat()),
             extra=context_unpack(request, {'MESSAGE_ID': 'save_lot'}, {'RESULT': lot.rev}))
         return True
 
