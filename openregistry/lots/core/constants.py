@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-
-from openprocurement.api.constants import (
-    TZ,  # noqa forwarded import
-    DOCUMENT_TYPES,  # noqa forwarded import
-    ROUTE_PREFIX,  # noqa forwarded import
+from openprocurement.api.constants import (  # noqa: F401
+    TZ, # noqa forwarded import
+    DOCUMENT_TYPES, # noqa forwarded import
+    ROUTE_PREFIX, # noqa forwarded import
     IDENTIFIER_CODES, # noqa forwarded import
     SANDBOX_MODE, # noqa forwarded import
     LOKI_DOCUMENT_TYPES # noqa forwarded import
