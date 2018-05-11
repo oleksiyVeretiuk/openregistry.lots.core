@@ -4,7 +4,7 @@ import mock
 
 from datetime import timedelta
 
-from schematics.exceptions import ModelValidationError
+
 
 from openregistry.lots.core.utils import get_now, error_handler
 from openregistry.lots.core.models import Lot
@@ -15,6 +15,8 @@ from openregistry.lots.core.validation import (
     validate_lot_data,
     validate_patch_lot_data
 )
+from openregistry.lots.core.tests.base import DummyException
+
 
 now = get_now()
 
@@ -27,10 +29,11 @@ class DummyValidationTest(unittest.TestCase):
         mocked_request.errors.add = mock.MagicMock()
 
         mocked_handler = mock.MagicMock()
-        mocked_handler.side_effect = [Exception, Exception]
+        mocked_handler.side_effect = [DummyException, DummyException]
 
+        # Check validation failed due to authenticated_role = concierge
         mocked_request.authenticated_role = 'concierge'
-        with self.assertRaises(Exception):
+        with self.assertRaises(DummyException):
             validate_post_lot_role(mocked_request, mocked_handler)
 
         mocked_handler.assert_called_with(mocked_request)
@@ -38,8 +41,9 @@ class DummyValidationTest(unittest.TestCase):
         assert mocked_request.errors.status == 403
         mocked_request.errors.status = None
 
+        # Check validation failed due to authenticated_role = convoy
         mocked_request.authenticated_role = 'convoy'
-        with self.assertRaises(Exception):
+        with self.assertRaises(DummyException):
             validate_post_lot_role(mocked_request, mocked_handler)
 
         mocked_handler.assert_called_with(mocked_request)
@@ -55,32 +59,35 @@ class DummyValidationTest(unittest.TestCase):
         mocked_request.context = mock.MagicMock()
 
         mocked_handler = mock.MagicMock()
-        mocked_handler.side_effect = [Exception, Exception, Exception, Exception]
+        mocked_handler.side_effect = [DummyException, DummyException, DummyException, DummyException]
 
+        # Check validation failed if authenticated_role is not lot_owner and doc.author is None
         mocked_request.authenticated_role = 'not_lot_owner'
         mocked_request.context = mock.MagicMock(author=None)
-        with self.assertRaises(Exception):
+        with self.assertRaises(DummyException):
             validate_lot_document_update_not_by_author_or_lot_owner(mocked_request, mocked_handler)
         mocked_handler.assert_called_with(mocked_request)
         mocked_request.errors.add.assert_called_with('url', 'role', 'Can update document only author')
         assert mocked_request.errors.status == 403
         mocked_request.status = None
 
-
+        # Check validation failed if authenticated_role is lot_owner but not equal doc.author
         mocked_request.authenticated_role = 'lot_owner'
         mocked_request.context = mock.MagicMock(author='author')
-        with self.assertRaises(Exception):
+        with self.assertRaises(DummyException):
             validate_lot_document_update_not_by_author_or_lot_owner(mocked_request, mocked_handler)
         mocked_handler.assert_called_with(mocked_request)
         mocked_request.errors.add.assert_called_with('url', 'role', 'Can update document only author')
         assert mocked_request.errors.status == 403
         mocked_request.errors.status = None
 
+        # Check validation success if authenticated_role is lot_owner and doc.author is none
         mocked_request.authenticated_role = 'lot_owner'
         mocked_request.context = mock.MagicMock(author=None)
         validate_lot_document_update_not_by_author_or_lot_owner(mocked_request, mocked_handler)
         assert mocked_request.errors.status is None
 
+        # Check validation success if authenticated_role is lot_owner and doc.author == lot_owner
         mocked_request.authenticated_role = 'author'
         mocked_request.context = mock.MagicMock(author='author')
         validate_lot_document_update_not_by_author_or_lot_owner(mocked_request, mocked_handler)
@@ -100,9 +107,11 @@ class DummyValidationTest(unittest.TestCase):
 
         mocked_handler = mock.MagicMock()
 
+        # Check validation success if lot_status is in item_editing_allowed_statuses
         validate_update_item_in_not_allowed_status(mocked_request, mocked_handler)
         assert mocked_raiser.call_count == 0
 
+        # Check validation failed if lot_status is not in item_editing_allowed_statuses
         mocked_request.validated['lot_status'] = 'wrong_status'
         validate_update_item_in_not_allowed_status(mocked_request, mocked_handler)
         assert mocked_raiser.call_count == 1
@@ -157,13 +166,13 @@ class DummyValidationTest(unittest.TestCase):
 
 
         # Mocking values for check failed validation due to broker level
-        mocked_handler.side_effect = [Exception]
+        mocked_handler.side_effect = [DummyException]
         mocked_validated_json.side_effect = [data]
 
         mocked_request.lot_from_data.side_effect = [mocked_model]
         mocked_request.check_accreditation.side_effect = [False, False]
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(DummyException):
             validate_lot_data(mocked_request, mocked_handler)
         mocked_update_context.call_count = 2
         mocked_update_context.assert_called_with(mocked_request, {'lot_id': '__new__'})
@@ -192,14 +201,14 @@ class DummyValidationTest(unittest.TestCase):
         # Mocking values for check failed validation due to mode/accrediation `t` level
         mocked_request.errors.status = None
 
-        mocked_handler.side_effect = [Exception]
+        mocked_handler.side_effect = [DummyException]
         mocked_validated_json.side_effect = [data]
         mocked_validated_data.side_effect = [data]
 
         mocked_request.lot_from_data.side_effect = [mocked_model]
         mocked_request.check_accreditation.side_effect = [True, False, True]
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(DummyException):
             validate_lot_data(mocked_request, mocked_handler)
         mocked_update_context.call_count = 3
         mocked_update_context.assert_called_with(mocked_request, {'lot_id': '__new__'})
@@ -243,7 +252,7 @@ class DummyValidationTest(unittest.TestCase):
         mocked_handler = mock.MagicMock()
 
         # Mocking values to check success validation
-        mocked_raise.side_effect = [Exception]
+        mocked_raise.side_effect = [DummyException]
         data = {'status': 'new_status'}
         mocked_request.content_configurator.available_statuses = {
             'context_status': {
@@ -265,7 +274,7 @@ class DummyValidationTest(unittest.TestCase):
 
         # Mocking values to check failed validation due to authenticated_role
         data = {'status': 'new_status'}
-        mocked_raise.side_effect = [Exception]
+        mocked_raise.side_effect = [DummyException]
         mocked_request.content_configurator.available_statuses = {
             'context_status': {
                 'editing_permissions': ['new_role']
@@ -273,7 +282,7 @@ class DummyValidationTest(unittest.TestCase):
         }
         mocked_validate_json.side_effect = [data]
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(DummyException):
             validate_patch_lot_data(mocked_request, mocked_handler)
 
         assert mocked_raise.call_count == 1
@@ -289,7 +298,7 @@ class DummyValidationTest(unittest.TestCase):
 
         # Mocking values to check failed validation due to authenticated_role
         data = {'status': 'draft'}
-        mocked_raise.side_effect = [Exception]
+        mocked_raise.side_effect = [DummyException]
         mocked_request.content_configurator.available_statuses = {
             'context_status': {
                 'editing_permissions': ['role']
@@ -297,7 +306,7 @@ class DummyValidationTest(unittest.TestCase):
         }
         mocked_validate_json.side_effect = [data]
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(DummyException):
             validate_patch_lot_data(mocked_request, mocked_handler)
 
         assert mocked_raise.call_count == 2
