@@ -13,6 +13,10 @@ from openprocurement.api.tests.base import (
 now = datetime.now()
 
 
+class DummyException(Exception):
+    pass
+
+
 class BaseLotWebTest(BaseResourceWebTest):
 
     resource_name = 'lots'
