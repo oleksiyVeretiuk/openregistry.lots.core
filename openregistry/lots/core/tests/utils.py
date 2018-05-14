@@ -13,7 +13,11 @@ from openregistry.lots.core.utils import (
     extract_lot_adapter,
     lot_from_data,
     register_lotType,
-    apply_patch
+    apply_patch,
+    lot_serialize,
+    save_lot,
+    SubscribersPicker,
+    isLot
 
 )
 from openregistry.lots.core.tests.base import DummyException
@@ -343,7 +347,7 @@ class DummyUtilityTest(unittest.TestCase):
         mocked_save_lot.assert_called_with(mocked_request)
 
         # Check apply_patch if data is not None
-        mocked_request.validated = {}
+        mocked_request.validated = {'data': 'validatedData'}
         data = 'someData'
         mocked_apply_data.side_effect = [patch]
         context.serialize.side_effect = [serialized_data]
@@ -430,9 +434,167 @@ class DummyUtilityTest(unittest.TestCase):
 
         assert mocked_save_lot.call_count == 3
 
+    def test_lot_serialize(self):
+        mocked_request = mock.MagicMock(
+            lot_from_data=mock.MagicMock()
+        )
+        mocked_lot = mock.MagicMock(
+            serialize=mock.MagicMock()
+        )
 
+        lot_data = {
+            'lotType': 'someLotType',
+            'dateModified': 'dateModified',
+            'id': 'someID',
+            'extra_field': 'extraValue'
+        }
+        fields = lot_data.keys()
 
+        # Check if request.lot_from_data returned None
+        mocked_request.lot_from_data.side_effect = [None]
+        returned_value = lot_serialize(mocked_request, lot_data, fields)
+        assert returned_value['lotType'] == lot_data['lotType']
+        assert returned_value['dateModified'] == lot_data['dateModified']
+        assert returned_value['id'] == lot_data['id']
+        assert bool('extra_field' in returned_value) is False
 
+        assert mocked_request.lot_from_data.call_count == 1
+        mocked_request.lot_from_data.assert_called_with(lot_data, raise_error=False)
 
+        # Check if request.lot_from_data returned not None
+        lot_serialize_data = {
+            'lotType': 'anotherLotType',
+            'dateModified': 'anotherDateModified',
+            'id': 'anotherID',
+            'extra_field': 'anotherExtraValue',
+            'second_extra_field': 'secondExtraValue'
+        }
+        mocked_lot.status = 'status'
+        mocked_lot.serialize.side_effect = [lot_serialize_data]
+        mocked_request.lot_from_data.side_effect = [mocked_lot]
+        returned_value = lot_serialize(mocked_request, lot_data, fields)
+        assert returned_value['lotType'] == lot_serialize_data['lotType']
+        assert returned_value['dateModified'] == lot_serialize_data['dateModified']
+        assert returned_value['id'] == lot_serialize_data['id']
+        assert returned_value['extra_field'] == lot_serialize_data['extra_field']
+        assert bool('second_extra_field' in returned_value) is False
 
+        assert mocked_request.lot_from_data.call_count == 2
+        mocked_request.lot_from_data.assert_called_with(lot_data, raise_error=False)
 
+        assert mocked_lot.serialize.call_count == 1
+        mocked_lot.serialize.assert_called_with(mocked_lot.status)
+
+    @mock.patch('openregistry.lots.core.utils.get_revision_changes')
+    @mock.patch('openregistry.lots.core.utils.store_lot')
+    @mock.patch('openregistry.lots.core.utils.set_modetest_titles')
+    def test_save_lot(self, mocked_set_modetest_titles, mocked_store_lot, mocked_get_revision_changes):
+        mocked_request = mock.MagicMock()
+        mocked_lot = mock.MagicMock(
+            serialize=mock.MagicMock()
+        )
+        lot_src = 'lot_src'
+        lot_serialize = 'serialized'
+        patch = 'patch'
+        # Check if mode == 'test'
+        mocked_lot.mode = u'test'
+        mocked_get_revision_changes.side_effect = [patch]
+        mocked_lot.serialize.side_effect = [lot_serialize]
+        mocked_request.validated = {'lot': mocked_lot, 'lot_src': lot_src}
+        save_lot(mocked_request)
+
+        assert mocked_set_modetest_titles.call_count == 1
+        mocked_set_modetest_titles.assert_called_with(mocked_lot)
+
+        assert mocked_get_revision_changes.call_count == 1
+        mocked_get_revision_changes.assert_called_with(lot_serialize, lot_src)
+
+        assert mocked_store_lot.call_count == 1
+        mocked_store_lot.assert_called_with(mocked_lot, patch, mocked_request)
+
+        assert mocked_lot.serialize.call_count == 1
+        mocked_lot.serialize.assert_called_with('plain')
+
+        # Check if mode == 'notTest'
+        mocked_lot.mode = u'notTest'
+        mocked_get_revision_changes.side_effect = [patch]
+        mocked_lot.serialize.side_effect = [lot_serialize]
+        mocked_request.validated = {'lot': mocked_lot, 'lot_src': lot_src}
+        save_lot(mocked_request)
+
+        assert mocked_set_modetest_titles.call_count == 1
+
+        assert mocked_get_revision_changes.call_count == 2
+        mocked_get_revision_changes.assert_called_with(lot_serialize, lot_src)
+
+        assert mocked_store_lot.call_count == 2
+        mocked_store_lot.assert_called_with(mocked_lot, patch, mocked_request)
+
+        assert mocked_lot.serialize.call_count == 2
+        mocked_lot.serialize.assert_called_with('plain')
+
+        # Check get_revision_changes returned None
+        mocked_lot.mode = u'notTest'
+        mocked_get_revision_changes.side_effect = [None]
+        mocked_lot.serialize.side_effect = [lot_serialize]
+        mocked_request.validated = {'lot': mocked_lot, 'lot_src': lot_src}
+        save_lot(mocked_request)
+
+        assert mocked_set_modetest_titles.call_count == 1
+
+        assert mocked_get_revision_changes.call_count == 3
+        mocked_get_revision_changes.assert_called_with(lot_serialize, lot_src)
+
+        assert mocked_lot.serialize.call_count == 3
+        mocked_lot.serialize.assert_called_with('plain')
+
+        assert mocked_store_lot.call_count == 2
+        mocked_store_lot.assert_called_with(mocked_lot, patch, mocked_request)
+
+    def test_SubscribersPicker(self):
+        value = 'value'
+        subscriber_picker = SubscribersPicker(value, {})
+
+        assert subscriber_picker.val == value
+        assert subscriber_picker.text() == 'lotType = {}'.format(value)
+
+        mocked_event = mock.MagicMock()
+        mocked_lot = mock.MagicMock()
+
+        # Check if request.lot is None
+        mocked_event.lot = None
+        assert subscriber_picker(mocked_event) is False
+
+        # Check if request.lot is not None, but lotType != self.val
+        mocked_lot.lotType = 'wrong'
+        mocked_event.lot = mocked_lot
+        assert subscriber_picker(mocked_event) is False
+
+        # Check if request.lot is not None, but lotType != self.val
+        mocked_lot.lotType = subscriber_picker.val
+        mocked_event.lot = mocked_lot
+        assert subscriber_picker(mocked_event) is True
+
+    def test_isLot(self):
+        value = 'value'
+        is_lot_instance = isLot(value, {})
+
+        assert is_lot_instance.val == value
+        assert is_lot_instance.text() == 'lotType = {}'.format(value)
+
+        mocked_request = mock.MagicMock()
+        mocked_lot = mock.MagicMock()
+
+        # Check if request.lot is None
+        mocked_request.lot = None
+        assert is_lot_instance({}, mocked_request) is False
+
+        # Check if request.lot is not None, but lotType != self.val
+        mocked_lot.lotType = 'wrong'
+        mocked_request.lot = mocked_lot
+        assert is_lot_instance({}, mocked_request) is False
+
+        # Check if request.lot is not None, but lotType != self.val
+        mocked_lot.lotType = is_lot_instance.val
+        mocked_request.lot = mocked_lot
+        assert is_lot_instance({}, mocked_request) is True
