@@ -3,11 +3,11 @@ import unittest
 import mock
 
 from couchdb.http import ResourceConflict
-from datetime import datetime
+from datetime import datetime, timedelta
+from schematics.exceptions import ModelValidationError
 
-
-from openregistry.lots.core.utils import get_now
 from openregistry.lots.core.utils import (
+    get_now,
     generate_lot_id,
     extract_lot,
     extract_lot_adapter,
@@ -17,9 +17,11 @@ from openregistry.lots.core.utils import (
     lot_serialize,
     save_lot,
     SubscribersPicker,
-    isLot
+    isLot,
+    store_lot
 
 )
+from openregistry.lots.core.models import Lot
 from openregistry.lots.core.tests.base import DummyException
 
 now = get_now()
@@ -38,7 +40,7 @@ class DummyUtilityTest(unittest.TestCase):
 
         # LotID with set server_id
         index = 1
-        db.get.side_effect = [{}]
+        db.get.side_effect = iter([{}])
         mocked_lotIDdoc = 'lotID_' + server_id
         mocked_lotID = {mocked_key: 2}
         lot_id = 'UA-LR-DGF-{:04}-{:02}-{:02}-{:06}{}'.format(
@@ -58,7 +60,7 @@ class DummyUtilityTest(unittest.TestCase):
 
         # LotID without server_id
         index = 1
-        db.get.side_effect = [{}]
+        db.get.side_effect = iter([{}])
         mocked_lotIDdoc = 'lotID'
         mocked_lotID = {mocked_key: 2}
         lot_id = 'UA-LR-DGF-{:04}-{:02}-{:02}-{:06}{}'.format(
@@ -78,7 +80,7 @@ class DummyUtilityTest(unittest.TestCase):
 
         # LotID without server_id and with index
         index = 2
-        db.get.side_effect = [{mocked_key: index}]
+        db.get.side_effect = iter([{mocked_key: index}])
         mocked_lotIDdoc = 'lotID'
         mocked_lotID = {mocked_key: index + 1}
         lot_id = 'UA-LR-DGF-{:04}-{:02}-{:02}-{:06}{}'.format(
@@ -97,20 +99,20 @@ class DummyUtilityTest(unittest.TestCase):
         db.save.assert_called_with(mocked_lotID)
 
         # Check while loop
-        db.get.side_effect = [{}, {}, {}]
-        db.save.side_effect = [DummyException, ResourceConflict, None]
+        db.get.side_effect = iter([{}, {}, {}])
+        db.save.side_effect = iter([DummyException, ResourceConflict, None])
         generate_lot_id(ctime, db)
         assert db.get.call_count == 6
         assert db.save.call_count == 6
 
-    @mock.patch('openregistry.lots.core.utils.decode_path_info')
-    @mock.patch('openregistry.lots.core.utils.extract_lot_adapter')
+    @mock.patch('openregistry.lots.core.utils.decode_path_info', autospec=True)
+    @mock.patch('openregistry.lots.core.utils.extract_lot_adapter', autospec=True)
     def test_extract_lot(self, mocked_extract_lot_adapter, mocked_decode_path_info):
         mocked_request = mock.MagicMock()
         mocked_request.environ = {}
 
         # Check with KeyError
-        mocked_extract_lot_adapter.side_effect = ['adapter']
+        mocked_extract_lot_adapter.side_effect = iter(['adapter'])
         returned_value = extract_lot(mocked_request)
         assert returned_value is None
         assert mocked_extract_lot_adapter.call_count == 0
@@ -118,9 +120,9 @@ class DummyUtilityTest(unittest.TestCase):
 
         # Check with path with id
         path = 'domain/api/0/lots/lotID'
-        mocked_extract_lot_adapter.side_effect = ['adapter']
+        mocked_extract_lot_adapter.side_effect = iter(['adapter'])
         mocked_request.environ = {'PATH_INFO': path}
-        mocked_decode_path_info.side_effect = [path]
+        mocked_decode_path_info.side_effect = iter([path])
 
         returned_value = extract_lot(mocked_request)
 
@@ -134,7 +136,7 @@ class DummyUtilityTest(unittest.TestCase):
         path = 'domain/api/0/'
         mocked_extract_lot_adapter.side_effect = ['adapter']
         mocked_request.environ = {'PATH_INFO': path}
-        mocked_decode_path_info.side_effect = [path]
+        mocked_decode_path_info.side_effect = iter([path])
 
         returned_value = extract_lot(mocked_request)
         assert returned_value is None
@@ -145,14 +147,14 @@ class DummyUtilityTest(unittest.TestCase):
         path = 'domain/api/0/notLots'
         mocked_extract_lot_adapter.side_effect = ['adapter']
         mocked_request.environ = {'PATH_INFO': path}
-        mocked_decode_path_info.side_effect = [path]
+        mocked_decode_path_info.side_effect = iter([path])
 
         returned_value = extract_lot(mocked_request)
         assert returned_value is None
         assert mocked_decode_path_info.call_count == 3
         assert mocked_extract_lot_adapter.call_count == 1
 
-    @mock.patch('openregistry.lots.core.utils.error_handler')
+    @mock.patch('openregistry.lots.core.utils.error_handler', autospec=True)
     def test_extract_lot_adapter(self, mocked_handler):
         mocked_request = mock.MagicMock(
             registry=mock.MagicMock(db=mock.MagicMock()),
@@ -165,8 +167,8 @@ class DummyUtilityTest(unittest.TestCase):
         db = mocked_request.registry.db
         # Check if db return None
         doc = None
-        db.get.side_effect = [doc]
-        mocked_handler.side_effect = [DummyException]
+        db.get.side_effect = iter([doc])
+        mocked_handler.side_effect = iter([DummyException])
 
         with self.assertRaises(DummyException):
             extract_lot_adapter(mocked_request, lot_id)
@@ -185,8 +187,8 @@ class DummyUtilityTest(unittest.TestCase):
 
         # Check if db return doc_type != Lot
         doc = {'doc_type': 'notLot'}
-        db.get.side_effect = [doc]
-        mocked_handler.side_effect = [DummyException]
+        db.get.side_effect = iter([doc])
+        mocked_handler.side_effect = iter([DummyException])
 
         with self.assertRaises(DummyException):
             extract_lot_adapter(mocked_request, lot_id)
@@ -206,8 +208,8 @@ class DummyUtilityTest(unittest.TestCase):
 
         # Check if db return doc_type == Lot
         doc = {'doc_type': 'Lot'}
-        db.get.side_effect = [doc]
-        mocked_request.lot_from_data.side_effect = ['lotFromData']
+        db.get.side_effect = iter([doc])
+        mocked_request.lot_from_data.side_effect = iter(['lotFromData'])
         returned_value = extract_lot_adapter(mocked_request, lot_id)
         assert returned_value == 'lotFromData'
         assert db.get.call_count == 3
@@ -221,8 +223,8 @@ class DummyUtilityTest(unittest.TestCase):
         mocked_request.lot_from_data.assert_called_with(doc)
 
 
-    @mock.patch('openregistry.lots.core.utils.update_logging_context')
-    @mock.patch('openregistry.lots.core.utils.error_handler')
+    @mock.patch('openregistry.lots.core.utils.update_logging_context', autospec=True)
+    @mock.patch('openregistry.lots.core.utils.error_handler', autospec=True)
     def test_lot_from_data(self, mocked_handler, mocked_update_logging):
         mocked_request = mock.MagicMock(
             registry=mock.MagicMock(
@@ -235,8 +237,8 @@ class DummyUtilityTest(unittest.TestCase):
 
         # Check lot_from_data with create=True
         data = {'lotType': 'someLotType'}
-        mocked_model.side_effect = ['model']
-        mocked_handler.side_effect = [DummyException]
+        mocked_model.side_effect = iter(['model'])
+        mocked_handler.side_effect = iter([DummyException])
         returned_value = lot_from_data(mocked_request, data)
         assert returned_value == 'model'
 
@@ -252,7 +254,7 @@ class DummyUtilityTest(unittest.TestCase):
 
         # Check lot_from_data with create=False
         data = {'lotType': 'someLotType'}
-        mocked_model.side_effect = ['model']
+        mocked_model.side_effect = iter(['model'])
         returned_value = lot_from_data(mocked_request, data, create=False)
         assert returned_value == mocked_model
 
@@ -267,8 +269,8 @@ class DummyUtilityTest(unittest.TestCase):
 
         # Check lot_from_data with wrong lotType
         data = {'lotType': 'wrongLotType'}
-        mocked_model.side_effect = ['model']
-        mocked_handler.side_effect = [DummyException]
+        mocked_model.side_effect = iter(['model'])
+        mocked_handler.side_effect = iter([DummyException])
 
         with self.assertRaises(DummyException):
             lot_from_data(mocked_request, data)
@@ -287,8 +289,8 @@ class DummyUtilityTest(unittest.TestCase):
 
         # Check lot_from_data with wrong lotType and with raise_error False
         data = {'lotType': 'wrongLotType'}
-        mocked_model.side_effect = ['model']
-        mocked_handler.side_effect = [DummyException]
+        mocked_model.side_effect = iter(['model'])
+        mocked_handler.side_effect = iter([DummyException])
 
         returned_value = lot_from_data(mocked_request, data, raise_error=False)
         assert returned_value is None
@@ -315,8 +317,8 @@ class DummyUtilityTest(unittest.TestCase):
         assert mocked_config.registry.lotTypes.keys()[0] == mocked_model.lotType.default
         assert mocked_config.registry.lotTypes[mocked_model.lotType.default] == mocked_model
 
-    @mock.patch('openregistry.lots.core.utils.save_lot')
-    @mock.patch('openregistry.lots.core.utils.apply_data_patch')
+    @mock.patch('openregistry.lots.core.utils.save_lot', autospec=True)
+    @mock.patch('openregistry.lots.core.utils.apply_data_patch', autospec=True)
     def test_apply_patch(self, mocked_apply_data, mocked_save_lot):
         mocked_request = mock.MagicMock(validated={})
         context = mock.MagicMock()
@@ -330,9 +332,9 @@ class DummyUtilityTest(unittest.TestCase):
 
         # Check apply_patch if data is None save is True src is None
         mocked_request.validated['data'] = 'data'
-        mocked_apply_data.side_effect = [patch]
-        context.serialize.side_effect = [serialized_data]
-        mocked_save_lot.side_effect = [saved_lot]
+        mocked_apply_data.side_effect = iter([patch])
+        context.serialize.side_effect = iter([serialized_data])
+        mocked_save_lot.side_effect = iter([saved_lot])
 
         returned_value = apply_patch(mocked_request)
         assert returned_value == saved_lot
@@ -349,9 +351,9 @@ class DummyUtilityTest(unittest.TestCase):
         # Check apply_patch if data is not None
         mocked_request.validated = {'data': 'validatedData'}
         data = 'someData'
-        mocked_apply_data.side_effect = [patch]
-        context.serialize.side_effect = [serialized_data]
-        mocked_save_lot.side_effect = [saved_lot]
+        mocked_apply_data.side_effect = iter([patch])
+        context.serialize.side_effect = iter([serialized_data])
+        mocked_save_lot.side_effect = iter([saved_lot])
 
         returned_value = apply_patch(mocked_request, data=data)
         assert returned_value == saved_lot
@@ -368,9 +370,9 @@ class DummyUtilityTest(unittest.TestCase):
         # Check apply_patch if src is not None
         src = 'someSrc'
         mocked_request.validated['data'] = 'data'
-        mocked_apply_data.side_effect = [patch]
-        context.serialize.side_effect = [serialized_data]
-        mocked_save_lot.side_effect = [saved_lot]
+        mocked_apply_data.side_effect = iter([patch])
+        context.serialize.side_effect = iter([serialized_data])
+        mocked_save_lot.side_effect = iter([saved_lot])
 
         returned_value = apply_patch(mocked_request, src=src)
         assert returned_value == saved_lot
@@ -386,9 +388,9 @@ class DummyUtilityTest(unittest.TestCase):
 
         # Check apply_patch if save is False
         mocked_request.validated['data'] = 'data'
-        mocked_apply_data.side_effect = [patch]
-        context.serialize.side_effect = [serialized_data]
-        mocked_save_lot.side_effect = [saved_lot]
+        mocked_apply_data.side_effect = iter([patch])
+        context.serialize.side_effect = iter([serialized_data])
+        mocked_save_lot.side_effect = iter([saved_lot])
 
         returned_value = apply_patch(mocked_request, save=False)
         assert returned_value is None
@@ -403,9 +405,9 @@ class DummyUtilityTest(unittest.TestCase):
 
         # Check apply_patch if all data is None
         mocked_request.validated['data'] = None
-        mocked_apply_data.side_effect = [patch]
-        context.serialize.side_effect = [serialized_data]
-        mocked_save_lot.side_effect = [saved_lot]
+        mocked_apply_data.side_effect = iter([patch])
+        context.serialize.side_effect = iter([serialized_data])
+        mocked_save_lot.side_effect = iter([saved_lot])
 
         returned_value = apply_patch(mocked_request)
         assert returned_value is None
@@ -419,9 +421,9 @@ class DummyUtilityTest(unittest.TestCase):
 
         # Check apply_patch if apply_data_patch return None
         mocked_request.validated['data'] = 'data'
-        mocked_apply_data.side_effect = [None]
-        context.serialize.side_effect = [serialized_data]
-        mocked_save_lot.side_effect = [saved_lot]
+        mocked_apply_data.side_effect = iter([None])
+        context.serialize.side_effect = iter([serialized_data])
+        mocked_save_lot.side_effect = iter([saved_lot])
 
         returned_value = apply_patch(mocked_request, save=False)
         assert returned_value is None
@@ -451,7 +453,7 @@ class DummyUtilityTest(unittest.TestCase):
         fields = lot_data.keys()
 
         # Check if request.lot_from_data returned None
-        mocked_request.lot_from_data.side_effect = [None]
+        mocked_request.lot_from_data.side_effect = iter([None])
         returned_value = lot_serialize(mocked_request, lot_data, fields)
         assert returned_value['lotType'] == lot_data['lotType']
         assert returned_value['dateModified'] == lot_data['dateModified']
@@ -470,8 +472,8 @@ class DummyUtilityTest(unittest.TestCase):
             'second_extra_field': 'secondExtraValue'
         }
         mocked_lot.status = 'status'
-        mocked_lot.serialize.side_effect = [lot_serialize_data]
-        mocked_request.lot_from_data.side_effect = [mocked_lot]
+        mocked_lot.serialize.side_effect = iter([lot_serialize_data])
+        mocked_request.lot_from_data.side_effect = iter([mocked_lot])
         returned_value = lot_serialize(mocked_request, lot_data, fields)
         assert returned_value['lotType'] == lot_serialize_data['lotType']
         assert returned_value['dateModified'] == lot_serialize_data['dateModified']
@@ -485,9 +487,9 @@ class DummyUtilityTest(unittest.TestCase):
         assert mocked_lot.serialize.call_count == 1
         mocked_lot.serialize.assert_called_with(mocked_lot.status)
 
-    @mock.patch('openregistry.lots.core.utils.get_revision_changes')
-    @mock.patch('openregistry.lots.core.utils.store_lot')
-    @mock.patch('openregistry.lots.core.utils.set_modetest_titles')
+    @mock.patch('openregistry.lots.core.utils.get_revision_changes', autospec=True)
+    @mock.patch('openregistry.lots.core.utils.store_lot', autospec=True)
+    @mock.patch('openregistry.lots.core.utils.set_modetest_titles', autospec=True)
     def test_save_lot(self, mocked_set_modetest_titles, mocked_store_lot, mocked_get_revision_changes):
         mocked_request = mock.MagicMock()
         mocked_lot = mock.MagicMock(
@@ -498,8 +500,8 @@ class DummyUtilityTest(unittest.TestCase):
         patch = 'patch'
         # Check if mode == 'test'
         mocked_lot.mode = u'test'
-        mocked_get_revision_changes.side_effect = [patch]
-        mocked_lot.serialize.side_effect = [lot_serialize]
+        mocked_get_revision_changes.side_effect = iter([patch])
+        mocked_lot.serialize.side_effect = iter([lot_serialize])
         mocked_request.validated = {'lot': mocked_lot, 'lot_src': lot_src}
         save_lot(mocked_request)
 
@@ -517,8 +519,8 @@ class DummyUtilityTest(unittest.TestCase):
 
         # Check if mode == 'notTest'
         mocked_lot.mode = u'notTest'
-        mocked_get_revision_changes.side_effect = [patch]
-        mocked_lot.serialize.side_effect = [lot_serialize]
+        mocked_get_revision_changes.side_effect = iter([patch])
+        mocked_lot.serialize.side_effect = iter([lot_serialize])
         mocked_request.validated = {'lot': mocked_lot, 'lot_src': lot_src}
         save_lot(mocked_request)
 
@@ -535,8 +537,8 @@ class DummyUtilityTest(unittest.TestCase):
 
         # Check get_revision_changes returned None
         mocked_lot.mode = u'notTest'
-        mocked_get_revision_changes.side_effect = [None]
-        mocked_lot.serialize.side_effect = [lot_serialize]
+        mocked_get_revision_changes.side_effect = iter([None])
+        mocked_lot.serialize.side_effect = iter([lot_serialize])
         mocked_request.validated = {'lot': mocked_lot, 'lot_src': lot_src}
         save_lot(mocked_request)
 
@@ -598,3 +600,222 @@ class DummyUtilityTest(unittest.TestCase):
         mocked_lot.lotType = is_lot_instance.val
         mocked_request.lot = mocked_lot
         assert is_lot_instance({}, mocked_request) is True
+
+    @mock.patch('openregistry.lots.core.utils.context_unpack', autospec=True)
+    @mock.patch('openregistry.lots.core.utils.LOGGER', autospec=True)
+    @mock.patch('openregistry.lots.core.tests.utils.Lot.revisions')
+    @mock.patch('openregistry.lots.core.utils.prepare_revision', autospec=True)
+    @mock.patch('openregistry.lots.core.utils.get_now', autospec=True)
+    def test_store_lot(self, mocked_get_now, mocked_prepare_revision, mocked_lot_revisions, mocked_logger, mocked_context_unpack):
+        lot = Lot()
+        # lot.store = mock.MagicMock()
+        # lot.revisions = mock.MagicMock()
+
+        mocked_request = mock.MagicMock()
+        mocked_request.authenticated_userid = 'authID'
+        mocked_request.registry.db = 'db'
+        mocked_request.errors = mock.MagicMock()
+        mocked_request.errors.add = mock.MagicMock()
+
+        patch = 'patch'
+        new_rev = 'new_revision'
+        rev_data = 'some data for new revision'
+
+        old_date = datetime.now() - timedelta(days=5)
+        new_date = datetime.now()
+        unpacked_context = 'unpacked context'
+
+        # Check success storing in db
+
+        lot.dateModified = old_date
+
+        with mock.patch.object(lot, 'store', autospec=True) as mocked_store:
+            with mock.patch.object(lot, 'revisions') as revisions_mock:
+                # Check success storing in db
+
+                mocked_context_unpack.side_effect = iter([
+                    unpacked_context
+                ])
+                mocked_get_now.side_effect = iter([
+                    new_date
+                ])
+                mocked_lot_revisions.model_class.side_effect = iter([new_rev])
+                mocked_prepare_revision.side_effect = iter([rev_data])
+
+                assert store_lot(lot, patch, mocked_request) is True
+
+                assert mocked_prepare_revision.call_count == 1
+                mocked_prepare_revision.assert_called_with(
+                    lot,
+                    patch,
+                    mocked_request.authenticated_userid
+                )
+
+                assert mocked_lot_revisions.model_class.call_count == 1
+                mocked_lot_revisions.model_class.assert_called_with(rev_data)
+
+                assert revisions_mock.append.call_count == 1
+                revisions_mock.append.assert_called_with(new_rev)
+
+                assert mocked_store.call_count == 1
+                mocked_store.assert_called_with(mocked_request.registry.db)
+
+                assert mocked_logger.info.call_count == 1
+                mocked_logger.info.assert_called_with(
+                    'Saved lot {lot_id}: dateModified {old_dateModified} -> {new_dateModified}'.format(
+                        lot_id=lot.id,
+                        old_dateModified=old_date.isoformat(),
+                        new_dateModified=new_date.isoformat()),
+                    extra=unpacked_context
+                )
+
+                # Check ModelValidationError
+                lot.dateModified = old_date
+
+                mocked_get_now.side_effect = iter([
+                    new_date
+                ])
+                mocked_lot_revisions.model_class.side_effect = iter([new_rev])
+                mocked_prepare_revision.side_effect = iter([rev_data])
+
+                error_key = 'error'
+                error_message = 'Some error'
+                mocked_store.side_effect = iter([
+                    ModelValidationError({error_key: error_message})
+                ])
+                assert store_lot(lot, patch, mocked_request) is None
+
+                mocked_prepare_revision.assert_called_with(
+                    lot,
+                    patch,
+                    mocked_request.authenticated_userid
+                )
+
+                assert mocked_lot_revisions.model_class.call_count == 2
+                mocked_lot_revisions.model_class.assert_called_with(rev_data)
+
+                assert revisions_mock.append.call_count == 2
+                revisions_mock.append.assert_called_with(new_rev)
+
+                assert mocked_store.call_count == 2
+                mocked_store.assert_called_with(mocked_request.registry.db)
+
+                assert mocked_request.errors.add.call_count == 1
+                assert mocked_request.errors.status == 422
+                mocked_request.errors.add.assert_called_with('body', error_key, error_message)
+
+                mocked_request.errors.status = None
+
+                # Check ResourceConflict
+                lot.dateModified = old_date
+
+                mocked_get_now.side_effect = iter([
+                    new_date
+                ])
+                mocked_lot_revisions.model_class.side_effect = iter([new_rev])
+                mocked_prepare_revision.side_effect = iter([rev_data])
+
+                error_message = 'conflict error'
+                mocked_store.side_effect = iter([
+                    ResourceConflict(error_message)
+                ])
+                assert store_lot(lot, patch, mocked_request) is None
+
+                mocked_prepare_revision.assert_called_with(
+                    lot,
+                    patch,
+                    mocked_request.authenticated_userid
+                )
+
+                assert mocked_lot_revisions.model_class.call_count == 3
+                mocked_lot_revisions.model_class.assert_called_with(rev_data)
+
+                assert revisions_mock.append.call_count == 3
+                revisions_mock.append.assert_called_with(new_rev)
+
+                assert mocked_store.call_count == 3
+                mocked_store.assert_called_with(mocked_request.registry.db)
+
+                assert mocked_request.errors.add.call_count == 2
+                assert mocked_request.errors.status == 409
+                mocked_request.errors.add.assert_called_with('body', 'data', error_message)
+
+                mocked_request.errors.status = None
+
+                # Check Exception
+                lot.dateModified = old_date
+
+                mocked_get_now.side_effect = iter([
+                    new_date
+                ])
+                mocked_lot_revisions.model_class.side_effect = iter([new_rev])
+                mocked_prepare_revision.side_effect = iter([rev_data])
+
+                error_message = 'just exception'
+                mocked_store.side_effect = iter([
+                    Exception(error_message)
+                ])
+                assert store_lot(lot, patch, mocked_request) is None
+
+                mocked_prepare_revision.assert_called_with(
+                    lot,
+                    patch,
+                    mocked_request.authenticated_userid
+                )
+
+                assert mocked_lot_revisions.model_class.call_count == 4
+                mocked_lot_revisions.model_class.assert_called_with(rev_data)
+
+                assert revisions_mock.append.call_count == 4
+                revisions_mock.append.assert_called_with(new_rev)
+
+                assert mocked_store.call_count == 4
+                mocked_store.assert_called_with(mocked_request.registry.db)
+
+                assert mocked_request.errors.add.call_count == 3
+                assert mocked_request.errors.status is None
+                mocked_request.errors.add.assert_called_with('body', 'data', error_message)
+
+                # Check modified is False
+                lot.modified = False
+                lot.dateModified = old_date
+
+                mocked_context_unpack.side_effect = iter([
+                    unpacked_context
+                ])
+                mocked_get_now.side_effect = iter([
+                    new_date
+                ])
+                mocked_store.side_effect = iter([
+                    None
+                ])
+                mocked_lot_revisions.model_class.side_effect = iter([new_rev])
+                mocked_prepare_revision.side_effect = iter([rev_data])
+
+
+                assert store_lot(lot, patch, mocked_request) is True
+
+                assert mocked_prepare_revision.call_count == 5
+                mocked_prepare_revision.assert_called_with(
+                    lot,
+                    patch,
+                    mocked_request.authenticated_userid
+                )
+
+                assert mocked_lot_revisions.model_class.call_count == 5
+                mocked_lot_revisions.model_class.assert_called_with(rev_data)
+
+                assert revisions_mock.append.call_count == 5
+                revisions_mock.append.assert_called_with(new_rev)
+
+                assert mocked_store.call_count == 5
+                mocked_store.assert_called_with(mocked_request.registry.db)
+
+                assert mocked_logger.info.call_count == 2
+                mocked_logger.info.assert_called_with(
+                    'Saved lot {lot_id}: dateModified {old_dateModified} -> {new_dateModified}'.format(
+                        lot_id=lot.id,
+                        old_dateModified=old_date.isoformat(),
+                        new_dateModified=old_date.isoformat()),
+                    extra=unpacked_context
+                )

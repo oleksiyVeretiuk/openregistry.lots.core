@@ -317,6 +317,7 @@ class DummyValidationTest(unittest.TestCase):
             'Can\'t switch lot to {} status'.format(data['status'])
         )
 
+
 def suite():
     tests = unittest.TestSuite()
     tests.addTest(unittest.makeSuite(DummyValidationTest))
