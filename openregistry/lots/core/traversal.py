@@ -21,6 +21,7 @@ class Root(object):
         (Allow, 'g:admins', ALL_PERMISSIONS),
         (Allow, 'g:concierge', 'edit_lot'),
         (Allow, 'g:convoy', 'edit_lot'),
+        (Allow, 'g:chronograph', 'edit_lot'),
     ]
 
     def __init__(self, request):
