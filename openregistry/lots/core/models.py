@@ -178,3 +178,7 @@ class Lot(BaseLot):
 
     create_accreditation = 1
     edit_accreditation = 2
+
+    def __init__(self, *args, **kwargs):
+        super(Lot, self).__init__(*args, **kwargs)
+        self.doc_type = "Lot"
