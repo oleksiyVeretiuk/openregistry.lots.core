@@ -43,7 +43,7 @@ def validate_patch_lot_data(request, error_handler, **kwargs):
     default_status = type(request.lot).fields['status'].default
     if data.get('status') == default_status and data.get('status') != request.context.status:
         raise_operation_error(request, error_handler, 'Can\'t switch lot to {} status'.format(default_status))
-    return validate_data(request, type(request.lot), data)
+    return validate_data(request, type(request.lot), data=data)
 
 
 def validate_lot_document_update_not_by_author_or_lot_owner(request, error_handler, **kwargs):
