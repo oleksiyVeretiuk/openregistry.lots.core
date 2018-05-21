@@ -230,6 +230,7 @@ class TestValidateLotData(unittest.TestCase):
         mocked_validated_data.assert_called_with(
             self.mocked_request,
             self.mocked_model,
+            'lot',
             data=self.data
         )
 
@@ -283,7 +284,8 @@ class TestValidatePatchLotData(unittest.TestCase):
         mocked_validate_json.assert_called_with(self.mocked_request)
 
         assert mocked_validate_data.call_count == 1
-        mocked_validate_data.assert_called_with(self.mocked_request, Lot, True, data)
+        mocked_validate_data.assert_called_with(self.mocked_request, Lot,
+                                                data=data)
 
         assert mocked_raise.call_count == 0
 
