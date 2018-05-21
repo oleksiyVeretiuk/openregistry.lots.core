@@ -19,7 +19,7 @@ def validate_lot_data(request, error_handler, **kwargs):
         request.errors.status = 403
         raise error_handler(request.errors)
 
-    data = validate_data(request, model, data=data)
+    data = validate_data(request, model, "lot", data=data)
     if data and data.get('mode', None) is None and request.check_accreditation('t'):
         request.errors.add('body', 'mode', 'Broker Accreditation level does not permit lot creation')
         request.errors.status = 403
@@ -43,7 +43,7 @@ def validate_patch_lot_data(request, error_handler, **kwargs):
     default_status = type(request.lot).fields['status'].default
     if data.get('status') == default_status and data.get('status') != request.context.status:
         raise_operation_error(request, error_handler, 'Can\'t switch lot to {} status'.format(default_status))
-    return validate_data(request, type(request.lot), True, data)
+    return validate_data(request, type(request.lot), data=data)
 
 
 def validate_lot_document_update_not_by_author_or_lot_owner(request, error_handler, **kwargs):
