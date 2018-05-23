@@ -138,6 +138,7 @@ class BaseLot(BaseResourceItem):
 
     create_accreditation = 1
     edit_accreditation = 2
+    _internal_type = None
 
     def __local_roles__(self):
         roles = dict([('{}_{}'.format(self.owner, self.owner_token), 'lot_owner')])

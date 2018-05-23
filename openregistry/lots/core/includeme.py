@@ -20,8 +20,8 @@ def includeme(config, plugin_map):
 
     # lotType plugins support
     config.registry.lotTypes = {}
-    config.add_route_predicate('lotType', isLot)
-    config.add_subscriber_predicate('lotType', SubscribersPicker)
+    config.add_route_predicate('_internal_type', isLot)
+    config.add_subscriber_predicate('_internal_type', SubscribersPicker)
     config.add_request_method(lot_from_data)
     config.add_directive('add_lotType',
                          register_lotType)
@@ -29,6 +29,8 @@ def includeme(config, plugin_map):
     config.scan("openregistry.lots.core.subscribers")
     config.registry.registerAdapter(LotConfigurator, (ILot, IRequest),
                                     IContentConfigurator)
+
+    config.registry.lot_type_configurator = {}
 
     LOGGER.info("Included openprocurement.lots.core plugin", extra={'MESSAGE_ID': 'included_plugin'})
 
