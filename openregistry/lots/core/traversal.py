@@ -43,7 +43,10 @@ def factory(request):
     if request.method != 'GET':
         request.validated['lot_src'] = lot.serialize('plain')
     if request.matchdict.get('auction_id'):
-        return get_item(lot, 'auction', request)
+        auction = get_item(lot, 'auction', request)
+        if request.matchdict.get('document_id'):
+            return get_item(auction, 'document', request)
+        return auction
     if request.matchdict.get('document_id'):
         return get_item(lot, 'document', request)
     if request.matchdict.get('item_id'):
