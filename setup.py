@@ -11,6 +11,8 @@ entry_points = {
     ]
 }
 
+test_requires = []
+
 setup(name='openregistry.lots.core',
       version=version,
       description="",
@@ -28,5 +30,6 @@ setup(name='openregistry.lots.core',
       namespace_packages=['openregistry', 'openregistry.lots'],
       include_package_data=True,
       zip_safe=False,
+      extras_require={'test': test_requires},
       entry_points=entry_points,
       )
