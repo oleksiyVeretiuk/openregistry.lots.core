@@ -324,11 +324,11 @@ class TestRegisterLotType(unittest.TestCase):
             registry=mock.MagicMock(lotTypes={})
         )
         self.mocked_model = mock.MagicMock(
-            lotType=mock.MagicMock(default='default')
+            lotType=mock.MagicMock(default='lotType')
         )
 
     def test_register_lotType(self):
-        register_lotType(self.mocked_config, self.mocked_model)
+        register_lotType(self.mocked_config, self.mocked_model, 'lotType')
         assert self.mocked_config.registry.lotTypes.keys()[0] == self.mocked_model.lotType.default
         assert self.mocked_config.registry.lotTypes[self.mocked_model.lotType.default] == self.mocked_model
 
@@ -633,8 +633,9 @@ class TestIsLot(unittest.TestCase):
         assert self.is_lot_instance({}, self.mocked_request) is False
 
     def test_request_lot_is_not_none_and_lotType_equal_value(self):
-        self.mocked_lot.lotType = self.is_lot_instance.val
+        self.mocked_lot.lotType = 'someValue'
         self.mocked_request.lot = self.mocked_lot
+        self.mocked_request.registry.lot_type_configurator = {'someValue': 'value'}
         assert self.is_lot_instance({}, self.mocked_request) is True
 
 
