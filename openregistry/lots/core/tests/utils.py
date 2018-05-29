@@ -18,14 +18,13 @@ from openregistry.lots.core.utils import (
     save_lot,
     SubscribersPicker,
     isLot,
-    store_lot
-
+    store_lot,
+    get_lot_types
 )
 from openregistry.lots.core.models import Lot
 from openregistry.lots.core.tests.base import DummyException
 
 now = get_now()
-
 
 
 class TestGenerateLotID(unittest.TestCase):
@@ -57,7 +56,6 @@ class TestGenerateLotID(unittest.TestCase):
         self.db.get.assert_called_with(mocked_lotIDdoc, {'_id': mocked_lotIDdoc})
         assert self.db.save.call_count == 1
         self.db.save.assert_called_with(mocked_lotID)
-
 
     def test_generation_without_server_id(self):
         index = 1
@@ -231,7 +229,6 @@ class TestExtractLotAdapter(unittest.TestCase):
         self.mocked_request.lot_from_data.assert_called_with(doc)
 
 
-
 @mock.patch('openregistry.lots.core.utils.update_logging_context', autospec=True)
 @mock.patch('openregistry.lots.core.utils.error_handler', autospec=True)
 class TestLotFromData(unittest.TestCase):
@@ -324,11 +321,11 @@ class TestRegisterLotType(unittest.TestCase):
             registry=mock.MagicMock(lotTypes={})
         )
         self.mocked_model = mock.MagicMock(
-            lotType=mock.MagicMock(default='default')
+            lotType=mock.MagicMock(default='lotType')
         )
 
     def test_register_lotType(self):
-        register_lotType(self.mocked_config, self.mocked_model)
+        register_lotType(self.mocked_config, self.mocked_model, 'lotType')
         assert self.mocked_config.registry.lotTypes.keys()[0] == self.mocked_model.lotType.default
         assert self.mocked_config.registry.lotTypes[self.mocked_model.lotType.default] == self.mocked_model
 
@@ -606,7 +603,7 @@ class TestSubscribersPicker(unittest.TestCase):
         assert self.subscriber_picker(self.mocked_event) is False
 
     def test_event_lot_is_not_none_and_lotType_equal_value(self):
-        self.mocked_lot.lotType = self.subscriber_picker.val
+        self.mocked_lot._internal_type = self.subscriber_picker.val
         self.mocked_event.lot = self.mocked_lot
         assert self.subscriber_picker(self.mocked_event) is True
 
@@ -633,9 +630,17 @@ class TestIsLot(unittest.TestCase):
         assert self.is_lot_instance({}, self.mocked_request) is False
 
     def test_request_lot_is_not_none_and_lotType_equal_value(self):
-        self.mocked_lot.lotType = self.is_lot_instance.val
+        self.mocked_lot.lotType = 'someValue'
         self.mocked_request.lot = self.mocked_lot
+        self.mocked_request.registry.lot_type_configurator = {'someValue': 'value'}
         assert self.is_lot_instance({}, self.mocked_request) is True
+
+    def test_get_lot_types(self):
+        self.mocked_lot.lotType = 'someValue'
+        self.mocked_request.lot = self.mocked_lot
+        self.mocked_request.registry.lot_type_configurator = {'someValue': 'value'}
+        lots = get_lot_types(self.mocked_request.registry, ('value',))
+        assert lots == ['someValue']
 
 
 @mock.patch('openregistry.lots.core.utils.context_unpack', autospec=True)

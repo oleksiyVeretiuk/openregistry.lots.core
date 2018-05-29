@@ -93,8 +93,18 @@ def extract_lot_adapter(request, lot_id):
     return request.lot_from_data(doc)
 
 
+def get_lot_types(registry, internal_types):
+    lot_types = [
+        lt for lt, it in registry.lot_type_configurator.items() if it in internal_types
+    ]
+    return lot_types
+
+
 def lot_from_data(request, data, raise_error=True, create=True):
-    lotType = data.get('lotType', DEFAULT_LOT_TYPE)
+    lotType = data.get('lotType')
+    if not lotType:
+        lot_types = get_lot_types(request.registry, (DEFAULT_LOT_TYPE,))
+        lotType = lot_types[0] if lot_types else DEFAULT_LOT_TYPE
     model = request.registry.lotTypes.get(lotType)
     if model is None and raise_error:
         request.errors.add('body', 'lotType', 'Not implemented')
@@ -128,18 +138,20 @@ class isLot(object):
 
     def __call__(self, context, request):
         if request.lot is not None:
-            return getattr(request.lot, 'lotType', None) == self.val
+            lot_type = getattr(request.lot, 'lotType', None)
+            return request.registry.lot_type_configurator.get(lot_type) == self.val
         return False
 
 
-def register_lotType(config, model):
+def register_lotType(config, model, lot_type):
     """Register a lotType.
     :param config:
         The pyramid configuration object that will be populated.
     :param model:
         The lot model class
     """
-    config.registry.lotTypes[model.lotType.default] = model
+    config.registry.lotTypes[lot_type] = model
+    config.registry.lot_type_configurator[lot_type] = model._internal_type
 
 
 class SubscribersPicker(isLot):
@@ -147,7 +159,8 @@ class SubscribersPicker(isLot):
 
     def __call__(self, event):
         if event.lot is not None:
-            return getattr(event.lot, 'lotType', None) == self.val
+            lot_type = getattr(event.lot, '_internal_type', None)
+            return lot_type == self.val
         return False
 
 
