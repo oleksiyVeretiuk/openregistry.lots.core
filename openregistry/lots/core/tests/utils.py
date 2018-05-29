@@ -18,14 +18,13 @@ from openregistry.lots.core.utils import (
     save_lot,
     SubscribersPicker,
     isLot,
-    store_lot
-
+    store_lot,
+    get_lot_types
 )
 from openregistry.lots.core.models import Lot
 from openregistry.lots.core.tests.base import DummyException
 
 now = get_now()
-
 
 
 class TestGenerateLotID(unittest.TestCase):
@@ -57,7 +56,6 @@ class TestGenerateLotID(unittest.TestCase):
         self.db.get.assert_called_with(mocked_lotIDdoc, {'_id': mocked_lotIDdoc})
         assert self.db.save.call_count == 1
         self.db.save.assert_called_with(mocked_lotID)
-
 
     def test_generation_without_server_id(self):
         index = 1
@@ -229,7 +227,6 @@ class TestExtractLotAdapter(unittest.TestCase):
 
         assert self.mocked_request.lot_from_data.call_count == 1
         self.mocked_request.lot_from_data.assert_called_with(doc)
-
 
 
 @mock.patch('openregistry.lots.core.utils.update_logging_context', autospec=True)
@@ -637,6 +634,13 @@ class TestIsLot(unittest.TestCase):
         self.mocked_request.lot = self.mocked_lot
         self.mocked_request.registry.lot_type_configurator = {'someValue': 'value'}
         assert self.is_lot_instance({}, self.mocked_request) is True
+
+    def test_get_lot_types(self):
+        self.mocked_lot.lotType = 'someValue'
+        self.mocked_request.lot = self.mocked_lot
+        self.mocked_request.registry.lot_type_configurator = {'someValue': 'value'}
+        lots = get_lot_types(self.mocked_request.registry, ('value',))
+        assert lots == ['someValue']
 
 
 @mock.patch('openregistry.lots.core.utils.context_unpack', autospec=True)
