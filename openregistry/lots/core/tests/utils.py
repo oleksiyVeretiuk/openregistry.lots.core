@@ -603,7 +603,7 @@ class TestSubscribersPicker(unittest.TestCase):
         assert self.subscriber_picker(self.mocked_event) is False
 
     def test_event_lot_is_not_none_and_lotType_equal_value(self):
-        self.mocked_lot.lotType = self.subscriber_picker.val
+        self.mocked_lot._internal_type = self.subscriber_picker.val
         self.mocked_event.lot = self.mocked_lot
         assert self.subscriber_picker(self.mocked_event) is True
 

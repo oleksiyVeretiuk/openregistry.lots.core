@@ -159,7 +159,8 @@ class SubscribersPicker(isLot):
 
     def __call__(self, event):
         if event.lot is not None:
-            return getattr(event.lot, 'lotType', None) == self.val
+            lot_type = getattr(event.lot, '_internal_type', None)
+            return lot_type == self.val
         return False
 
 
