@@ -10,6 +10,7 @@ from openprocurement.api.constants import IDENTIFIER_CODES  # noqa forwarded imp
 from openprocurement.api.interfaces import IORContent
 from openprocurement.api.models.auction_models import Value  # noqa forwarded import
 from openprocurement.api.models.common import (  # noqa: F401
+    sensitive_embedded_role,
     BaseResourceItem,
     Guarantee,  # noqa forwarded import
     Period,  # noqa forwarded import
@@ -49,14 +50,16 @@ from openprocurement.api.models.schematics_extender import (  # noqa: F401
 
 from .constants import LOT_STATUSES
 
+lots_embedded_role = sensitive_embedded_role
+
 create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions',
                          'date', 'dateModified', 'lotID', 'documents',
-                         'status', 'doc_id') + schematics_embedded_role)
+                         'status', 'doc_id') + lots_embedded_role)
 edit_role = (blacklist('owner_token', 'owner', '_attachments',
                        'revisions', 'date', 'dateModified', 'documents',
-                       'lotID', 'mode', 'doc_id') + schematics_embedded_role)
+                       'lotID', 'mode', 'doc_id') + lots_embedded_role)
 view_role = (blacklist('owner_token',
-                       '_attachments', 'revisions') + schematics_embedded_role)
+                       '_attachments', 'revisions') + lots_embedded_role)
 
 Administrator_role = whitelist('status', 'mode')
 
