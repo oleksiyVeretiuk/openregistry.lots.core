@@ -6,6 +6,7 @@ from openprocurement.api.validation import (  # noqa: F401
     validate_document_data, # noqa forwarded import
     validate_change_status, # noqa forwarded import
     validate_patch_document_data, # noqa forwarded import
+    validate_items_uniq, # noqa forwarded import
 )
 
 

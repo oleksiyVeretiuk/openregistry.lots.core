@@ -35,8 +35,8 @@ from openprocurement.api.models.registry_models import (  # noqa: F401
     AssetCustodian,  # noqa forwarded import
     AssetHolder  # noqa forwarded import
 )
-from openprocurement.api.models.roles import (
-    schematics_embedded_role,
+from openprocurement.api.models.roles import (  # noqa: F401
+    schematics_embedded_role, # noqa forwarded import
     schematics_default_role,
     plain_role,
     listing_role
