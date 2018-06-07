@@ -41,3 +41,19 @@ class AuctionsResource(APIResource):
             )
 
             return {'data': self.request.context.serialize('view')}
+
+
+@oplotsresource(
+    name='Auction credentials',
+    path='/lots/{lot_id}/extract_credentials',
+    description="Auctions Extract Credentials"
+)
+class AuctionResource(APIResource):
+
+    @json_view(permission='extract_credentials')
+    def get(self):
+        self.LOGGER.info('Extract credentials for lot {}'.format(self.context.id))
+        lot = self.request.validated['lot']
+        data = lot.serialize('extract_credentials') or {}
+        data['transfer_token'] = lot.transfer_token
+        return {'data': data}

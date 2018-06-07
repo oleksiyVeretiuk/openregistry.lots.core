@@ -123,7 +123,8 @@ class BaseLot(BaseResourceItem):
             # Sold role
             'sold': view_role,
             'concierge': whitelist('status'),
-            'convoy': whitelist('status', 'auctions')
+            'convoy': whitelist('status', 'auctions'),
+            'extract_credentials': whitelist('owner', 'id')
         }
 
     # lotID should always be the same as the OCID. It is included to make the flattened data structure more convenient.
