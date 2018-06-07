@@ -52,14 +52,13 @@ from .constants import LOT_STATUSES
 
 lots_embedded_role = sensitive_embedded_role
 
-create_role = (blacklist('owner_token', 'owner', '_attachments', 'revisions',
+create_role = (blacklist('owner', '_attachments', 'revisions',
                          'date', 'dateModified', 'lotID', 'documents',
                          'status', 'doc_id') + lots_embedded_role)
-edit_role = (blacklist('owner_token', 'owner', '_attachments',
+edit_role = (blacklist('owner', '_attachments',
                        'revisions', 'date', 'dateModified', 'documents',
                        'lotID', 'mode', 'doc_id') + lots_embedded_role)
-view_role = (blacklist('owner_token',
-                       '_attachments', 'revisions') + lots_embedded_role)
+view_role = (blacklist('_attachments', 'revisions') + lots_embedded_role)
 
 Administrator_role = whitelist('status', 'mode')
 
@@ -124,7 +123,8 @@ class BaseLot(BaseResourceItem):
             # Sold role
             'sold': view_role,
             'concierge': whitelist('status'),
-            'convoy': whitelist('status', 'auctions')
+            'convoy': whitelist('status', 'auctions'),
+            'extract_credentials': whitelist('owner', 'id')
         }
 
     # lotID should always be the same as the OCID. It is included to make the flattened data structure more convenient.

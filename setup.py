@@ -2,12 +2,17 @@ from setuptools import setup, find_packages
 
 version = '0.1.1'
 
+lot_transferring = 'openregistry.lots.core.plugins.transferring.includeme:includeme'
+
 entry_points = {
     'openprocurement.api.plugins': [
         'lots.core = openregistry.lots.core.includeme:includeme'
     ],
     'openregistry.tests': [
         'lots.core = openregistry.lots.core.tests.main:suite'
+    ],
+    'transferring': [
+        'lots.transferring = {}'.format(lot_transferring)
     ]
 }
 
