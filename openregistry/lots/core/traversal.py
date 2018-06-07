@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-
 from pyramid.security import (
-    ALL_PERMISSIONS,
     Allow,
     Everyone,
 )
@@ -12,7 +10,6 @@ class Root(object):
     __name__ = None
     __parent__ = None
     __acl__ = [
-        # (Allow, Everyone, ALL_PERMISSIONS),
         (Allow, Everyone, 'view_listing'),
         (Allow, Everyone, 'view_lot'),
         (Allow, 'g:brokers', 'create_lot'),
