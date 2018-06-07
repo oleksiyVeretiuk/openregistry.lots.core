@@ -22,7 +22,7 @@ from openregistry.lots.core.utils import (
     get_lot_types
 )
 from openregistry.lots.core.models import Lot
-from openregistry.lots.core.tests.base import DummyException
+from openregistry.lots.core.tests.base import DummyException, BaseLotWebTest
 
 now = get_now()
 
@@ -877,3 +877,27 @@ class TestStoreLot(unittest.TestCase):
                         new_dateModified=self.old_date.isoformat()),
                     extra=self.unpacked_context
                 )
+
+
+@mock.patch('openregistry.lots.core.utils.project_configurator', autospec=True)
+class TestLotProjectConfigurator(BaseLotWebTest):
+
+    def setUp(self):
+        self.database = self.db
+
+    def test_generate_id(self, mock_project_configurator):
+        test_prefix = 'TEST-ID'
+        mock_project_configurator.LOT_PREFIX = test_prefix
+        result = generate_lot_id(get_now(), self.db)
+
+        key = get_now().date().isoformat()
+        index = self.db.get(key, 1)
+        mock_id = '{}-{:04}-{:02}-{:02}-{:06}{}'.format(
+            test_prefix,
+            get_now().year,
+            get_now().month,
+            get_now().day,
+            index,
+            ''
+        )
+        self.assertEqual(result, mock_id)

@@ -7,6 +7,7 @@ from schematics.exceptions import ModelValidationError
 from cornice.resource import resource
 from pyramid.compat import decode_path_info
 from pyramid.exceptions import URLDecodeError
+from openregistry.lots.core.configurator import project_configurator
 
 
 from openprocurement.api.utils import (  # noqa: F401
@@ -54,13 +55,15 @@ def generate_lot_id(ctime, db, server_id=''):
             sleep(1)
         else:
             break
-    return 'UA-LR-DGF-{:04}-{:02}-{:02}-{:06}{}'.format(
-                                                ctime.year,
-                                                ctime.month,
-                                                ctime.day,
-                                                index,
-                                                server_id and '-' + server_id
-                                            )
+
+    return '{}-{:04}-{:02}-{:02}-{:06}{}'.format(
+        project_configurator.LOT_PREFIX,
+        ctime.year,
+        ctime.month,
+        ctime.day,
+        index,
+        server_id and '-' + server_id
+    )
 
 
 def extract_lot(request):
