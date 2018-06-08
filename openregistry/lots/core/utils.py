@@ -24,7 +24,12 @@ from openprocurement.api.utils import (  # noqa: F401
     apply_data_patch,
     prepare_revision,
     raise_operation_error,  # noqa forwarded import
-    update_logging_context
+    update_logging_context,
+    get_first_document,  # noqa forwarded import
+    check_document,  # noqa forwarded import
+    set_first_document_fields,  # noqa forwarded import
+    get_type,  # noqa forwarded import
+    update_document_url  # noqa forwarded import
 )
 
 from openregistry.lots.core.constants import DEFAULT_LOT_TYPE
