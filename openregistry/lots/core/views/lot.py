@@ -5,9 +5,6 @@ from openregistry.lots.core.utils import (
     APIResource
 )
 from openregistry.lots.core.interfaces import ILotManager
-from openregistry.lots.core.validation import (
-    validate_change_status,
-)
 
 from openregistry.lots.core.utils import (
     oplotsresource, apply_patch
@@ -20,7 +17,6 @@ from openregistry.lots.core.validation import (
 
 patch_lot_validators = (
     validate_patch_lot_data,
-    validate_change_status,
 )
 
 
