@@ -250,6 +250,7 @@ class TestValidateLotData(unittest.TestCase):
         assert self.mocked_request.errors.status == 403
 
 
+@mock.patch('openregistry.lots.core.validation.validate_change_status')
 @mock.patch('openregistry.lots.core.validation.validate_data')
 @mock.patch('openregistry.lots.core.validation.validate_json_data')
 @mock.patch('openregistry.lots.core.validation.raise_operation_error')
@@ -268,7 +269,7 @@ class TestValidatePatchLotData(unittest.TestCase):
         # Mock error handler
         self.mocked_handler = mock.MagicMock()
 
-    def test_success_validation(self, mocked_raise, mocked_validate_json, mocked_validate_data):
+    def test_success_validation(self, mocked_raise, mocked_validate_json, mocked_validate_data, mocked_change_status):
         mocked_raise.side_effect = [DummyException]
         data = {'status': 'new_status'}
         self.mocked_request.content_configurator.available_statuses = {
@@ -283,13 +284,19 @@ class TestValidatePatchLotData(unittest.TestCase):
         assert mocked_validate_json.call_count == 1
         mocked_validate_json.assert_called_with(self.mocked_request)
 
+        assert mocked_change_status.call_count == 1
+        mocked_change_status.assert_called_with(
+            self.mocked_request,
+            self.mocked_handler,
+            )
+
         assert mocked_validate_data.call_count == 1
         mocked_validate_data.assert_called_with(self.mocked_request, Lot,
                                                 data=data)
 
         assert mocked_raise.call_count == 0
 
-    def test_wrong_authenticated_role(self, mocked_raise, mocked_validate_json, mocked_validate_data):
+    def test_wrong_authenticated_role(self, mocked_raise, mocked_validate_json, mocked_validate_data, mocked_change_status):
         data = {'status': 'new_status'}
         mocked_raise.side_effect = [DummyException]
         self.mocked_request.content_configurator.available_statuses = {
@@ -307,6 +314,7 @@ class TestValidatePatchLotData(unittest.TestCase):
 
         assert mocked_validate_data.call_count == 0
 
+        assert mocked_change_status.call_count == 0
 
         assert mocked_raise.call_count == 1
         msg = 'Can\'t update {} in current ({}) status'.format(
@@ -319,7 +327,7 @@ class TestValidatePatchLotData(unittest.TestCase):
             msg
         )
 
-    def test_patch_to_default(self, mocked_raise, mocked_validate_json, mocked_validate_data):
+    def test_patch_to_default(self, mocked_raise, mocked_validate_json, mocked_validate_data, mocked_change_status):
         data = {'status': 'draft'}
         mocked_raise.side_effect = [DummyException]
         self.mocked_request.content_configurator.available_statuses = {
@@ -337,6 +345,7 @@ class TestValidatePatchLotData(unittest.TestCase):
 
         assert mocked_validate_data.call_count == 0
 
+        assert mocked_change_status.call_count == 0
 
         assert mocked_raise.call_count == 1
 
