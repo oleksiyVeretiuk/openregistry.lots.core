@@ -49,5 +49,7 @@ def factory(request):
         return get_item(lot, 'document', request)
     if request.matchdict.get('item_id'):
         return get_item(lot, 'item', request)
+    if request.matchdict.get('contract_id'):
+        return get_item(lot, 'contract', request)
     request.validated['id'] = request.matchdict['lot_id']
     return lot
