@@ -6,7 +6,10 @@ from schematics.types import StringType, MD5Type
 from schematics.types.compound import ModelType, ListType
 from zope.interface import implementer
 
-from openprocurement.api.constants import IDENTIFIER_CODES  # noqa forwarded import
+from openprocurement.api.constants import (
+    IDENTIFIER_CODES,  # noqa forwarded import
+    SANDBOX_MODE
+)
 from openprocurement.api.interfaces import IORContent
 from openprocurement.api.models.auction_models import Value  # noqa forwarded import
 from openprocurement.api.models.common import (  # noqa: F401
@@ -143,6 +146,10 @@ class BaseLot(BaseResourceItem):
     edit_accreditation = 2
     _internal_type = None
 
+    if SANDBOX_MODE:
+        sandboxParameters = StringType()
+
+
     def __local_roles__(self):
         roles = dict([('{}_{}'.format(self.owner, self.owner_token), 'lot_owner')])
         return roles
@@ -167,6 +174,10 @@ class BaseLot(BaseResourceItem):
         ]
         return acl
 
+    def validate_sandboxParameters(self, *args, **kw):
+        if self.mode and self.mode == 'test' and self.sandboxParameters and self.sandboxParameters != '':
+            raise ValidationError(u"procurementMethodDetails should be used with mode test")
+
 
 def validate_asset_uniq(assets, *args):
     if len(assets) != len(set(assets)):
@@ -179,9 +190,6 @@ class Lot(BaseLot):
     auctions = ListType(MD5Type(), default=list())
     assets = ListType(MD5Type(), required=True, min_size=1,
                       validators=[validate_asset_uniq])
-
-    create_accreditation = 1
-    edit_accreditation = 2
 
     def __init__(self, *args, **kwargs):
         super(Lot, self).__init__(*args, **kwargs)
