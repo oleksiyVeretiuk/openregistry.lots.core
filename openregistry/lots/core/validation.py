@@ -2,29 +2,24 @@
 from openprocurement.api.validation import validate_data, validate_json_data
 from .utils import update_logging_context, raise_operation_error
 from openprocurement.api.validation import (  # noqa: F401
-    validate_file_upload, # noqa forwarded import
-    validate_document_data, # noqa forwarded import
+    validate_accreditations,
     validate_change_status, # noqa forwarded import
-    validate_patch_document_data, # noqa forwarded import
+    validate_document_data, # noqa forwarded import
+    validate_file_upload, # noqa forwarded import
     validate_items_uniq, # noqa forwarded import
+    validate_patch_document_data, # noqa forwarded import
+    validate_t_accreditation,
 )
 
 
-def validate_lot_data(request, error_handler, **kwargs):
+def validate_lot_data(request, **kwargs):
     update_logging_context(request, {'lot_id': '__new__'})
     data = validate_json_data(request)
     model = request.lot_from_data(data, create=False)
-    if not any([request.check_accreditation(acc) for acc in iter(str(model.create_accreditation))]):
-        request.errors.add('body', 'accreditation',
-                           'Broker Accreditation level does not permit lot creation')
-        request.errors.status = 403
-        raise error_handler(request.errors)
+    validate_accreditations(request, model)
 
     data = validate_data(request, model, "lot", data=data)
-    if data and data.get('mode', None) is None and request.check_accreditation('t'):
-        request.errors.add('body', 'mode', 'Broker Accreditation level does not permit lot creation')
-        request.errors.status = 403
-        raise error_handler(request)
+    validate_t_accreditation(request, data)
 
 
 def validate_post_lot_role(request, error_handler, **kwargs):

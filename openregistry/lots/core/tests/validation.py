@@ -127,6 +127,8 @@ class TestValidateUpdateItemInNotAllowedStatus(unittest.TestCase):
             'Can\'t update item in current ({}) lot status'.format(self.mocked_request.validated['lot_status']))
 
 
+@mock.patch('openregistry.lots.core.validation.validate_t_accreditation')
+@mock.patch('openregistry.lots.core.validation.validate_accreditations')
 @mock.patch('openregistry.lots.core.validation.update_logging_context')
 @mock.patch('openregistry.lots.core.validation.validate_json_data')
 @mock.patch('openregistry.lots.core.validation.validate_data')
@@ -134,120 +136,33 @@ class TestValidateLotData(unittest.TestCase):
 
     def setUp(self):
         # Mock request
-        self.mocked_request = mock.MagicMock()
-        self.mocked_request.lot_from_data = mock.MagicMock()
-        self.mocked_request.check_accreditation = mock.MagicMock()
-        self.mocked_request.errors = mock.MagicMock(add=mock.MagicMock(), status=None)
-
-        # Mock error handler
-        self.mocked_handler = mock.MagicMock()
+        self.request = mock.MagicMock()
+        self.request.lot_from_data = mock.MagicMock()
+        self.request.check_accreditation = mock.MagicMock()
+        self.request.errors = mock.MagicMock(add=mock.MagicMock(), status=None)
 
         # Mock model that returned by request.lot_from_data
-        self.mocked_model = mock.MagicMock(create_accreditation='AB')
+        self.model = mock.MagicMock(create_accreditation='AB')
         self.data = {'status': 'pending'}
 
-    def test_success_validation(self, mocked_validated_data, mocked_validated_json, mocked_update_context):
-        self.mocked_handler.side_effect = [DummyException]
-        mocked_validated_json.side_effect = [self.data]
+    def test_success_validation(
+            self,
+            validated_data,
+            validated_json,
+            update_context,
+            validate_accreditations,
+            validate_t_accreditation,
+        ):
+        validated_json.side_effect = [self.data]
+        self.request.lot_from_data.side_effect = [self.model]
 
-        self.mocked_request.lot_from_data.side_effect = [self.mocked_model]
-        self.mocked_request.check_accreditation.side_effect = [False, False]
+        validate_lot_data(self.request)
 
-        with self.assertRaises(DummyException):
-            validate_lot_data(self.mocked_request, self.mocked_handler)
-        mocked_update_context.call_count = 2
-        mocked_update_context.assert_called_with(self.mocked_request, {'lot_id': '__new__'})
-
-        mocked_validated_json.call_count = 2
-        mocked_validated_json.assert_called_with(self.mocked_request)
-
-        mocked_validated_data.call_count = 1
-
-        self.mocked_request.lot_from_data.call_count = 1
-        self.mocked_request.lot_from_data.assert_called_with({'status': 'pending'}, create=False)
-
-        self.mocked_request.check_accreditation.call_count = 5
-        self.mocked_request.check_accreditation.assert_called_with('B')
-
-        self.mocked_handler.assert_called_with(self.mocked_request.errors)
-
-        self.mocked_request.errors.add.assert_called_with(
-            'body',
-            'accreditation',
-            'Broker Accreditation level does not permit lot creation'
-        )
-        assert self.mocked_request.errors.add.call_count == 1
-        assert self.mocked_request.errors.status == 403
-
-    def test_wrong_broker_level(self, mocked_validated_data, mocked_validated_json, mocked_update_context):
-        self.mocked_handler.side_effect = [DummyException]
-        mocked_validated_json.side_effect = [self.data]
-
-        self.mocked_request.lot_from_data.side_effect = [self.mocked_model]
-        self.mocked_request.check_accreditation.side_effect = [False, False]
-
-        with self.assertRaises(DummyException):
-            validate_lot_data(self.mocked_request, self.mocked_handler)
-        mocked_update_context.call_count = 0
-
-        mocked_validated_json.call_count = 0
-
-        mocked_validated_data.call_count = 0
-
-        self.mocked_request.lot_from_data.call_count = 0
-
-        self.mocked_request.check_accreditation.call_count = 0
-
-        self.mocked_handler.assert_called_with(self.mocked_request.errors)
-
-        self.mocked_request.errors.add.assert_called_with(
-            'body',
-            'accreditation',
-            'Broker Accreditation level does not permit lot creation'
-        )
-        assert self.mocked_request.errors.add.call_count == 1
-        assert self.mocked_request.errors.status == 403
-
-    def test_mode_and_t_accreditation(self, mocked_validated_data, mocked_validated_json, mocked_update_context):
-        self.mocked_request.errors.status = None
-
-        self.mocked_handler.side_effect = [DummyException]
-        mocked_validated_json.side_effect = [self.data]
-        mocked_validated_data.side_effect = [self.data]
-
-        self.mocked_request.lot_from_data.side_effect = [self.mocked_model]
-        self.mocked_request.check_accreditation.side_effect = [True, False, True]
-
-        with self.assertRaises(DummyException):
-            validate_lot_data(self.mocked_request, self.mocked_handler)
-        mocked_update_context.call_count = 1
-        mocked_update_context.assert_called_with(self.mocked_request, {'lot_id': '__new__'})
-
-        mocked_validated_json.call_count = 1
-        mocked_validated_json.assert_called_with(self.mocked_request)
-
-        mocked_validated_data.call_count = 1
-        mocked_validated_data.assert_called_with(
-            self.mocked_request,
-            self.mocked_model,
-            'lot',
-            data=self.data
-        )
-
-        self.mocked_request.lot_from_data.call_count = 0
-
-        self.mocked_request.check_accreditation.call_count = 3
-        self.mocked_request.check_accreditation.assert_called_with('t')
-
-        self.mocked_handler.assert_called_with(self.mocked_request)
-
-        self.mocked_request.errors.add.assert_called_with(
-            'body',
-            'mode',
-            'Broker Accreditation level does not permit lot creation'
-        )
-        assert self.mocked_request.errors.add.call_count == 1
-        assert self.mocked_request.errors.status == 403
+        update_context.assert_called_with(self.request, {'lot_id': '__new__'})
+        validated_json.assert_called_with(self.request)
+        self.request.lot_from_data.assert_called_with({'status': 'pending'}, create=False)
+        assert validate_accreditations.call_count == 1
+        assert validate_t_accreditation.call_count == 1
 
 
 @mock.patch('openregistry.lots.core.validation.validate_change_status')
