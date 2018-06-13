@@ -6,7 +6,7 @@ from schematics.types import StringType, MD5Type
 from schematics.types.compound import ModelType, ListType
 from zope.interface import implementer
 
-from openprocurement.api.constants import (
+from openprocurement.api.constants import (  # noqa: F401
     IDENTIFIER_CODES,  # noqa forwarded import
     SANDBOX_MODE
 )
@@ -148,7 +148,6 @@ class BaseLot(BaseResourceItem):
 
     if SANDBOX_MODE:
         sandboxParameters = StringType()
-
 
     def __local_roles__(self):
         roles = dict([('{}_{}'.format(self.owner, self.owner_token), 'lot_owner')])
