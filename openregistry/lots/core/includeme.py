@@ -10,6 +10,8 @@ from openprocurement.api.interfaces import IContentConfigurator
 from openregistry.lots.core.adapters import LotConfigurator
 from openregistry.lots.core.models import ILot
 
+from openprocurement.api.utils import get_plugin_aliases
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -33,6 +35,11 @@ def includeme(config, plugin_map):
     config.registry.lot_type_configurator = {}
 
     LOGGER.info("Included openprocurement.lots.core plugin", extra={'MESSAGE_ID': 'included_plugin'})
+
+    # Aliases information
+    LOGGER.info('Start aliases')
+    get_plugin_aliases(plugin_map.get('plugins', {}))
+    LOGGER.info('End aliases')
 
     # search for plugins
     get_evenly_plugins(config, plugin_map['plugins'], 'openregistry.lots.core.plugins')
