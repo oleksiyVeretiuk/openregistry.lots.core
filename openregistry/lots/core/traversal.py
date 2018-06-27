@@ -45,6 +45,8 @@ def factory(request):
         if request.matchdict.get('document_id'):
             return get_item(auction, 'document', request)
         return auction
+    if request.matchdict.get('decision_id'):
+        return get_item(lot, 'decision', request)
     if request.matchdict.get('document_id'):
         return get_item(lot, 'document', request)
     if request.matchdict.get('item_id'):
