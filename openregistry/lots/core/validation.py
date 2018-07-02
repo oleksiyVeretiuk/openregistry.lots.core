@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from functools import partial
+
 from openprocurement.api.validation import validate_data, validate_json_data
 from .utils import update_logging_context, raise_operation_error
 from openprocurement.api.validation import (  # noqa: F401
@@ -9,6 +11,19 @@ from openprocurement.api.validation import (  # noqa: F401
     validate_items_uniq, # noqa forwarded import
     validate_patch_document_data, # noqa forwarded import
     validate_t_accreditation,
+    validate_decision_post, # noqa forwarded import
+    validate_decision_patch_data, # noqa forwarded import
+    validate_decision_after_rectificationPeriod,
+    validate_decision_update_in_not_allowed_status
+)
+
+validate_decision_after_rectificationPeriod = partial(
+    validate_decision_after_rectificationPeriod,
+    parent_resource='lot'
+)
+validate_decision_update_in_not_allowed_status = partial(
+    validate_decision_update_in_not_allowed_status,
+    parent_resource='lot'
 )
 
 
