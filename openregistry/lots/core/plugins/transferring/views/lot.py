@@ -36,7 +36,7 @@ class AuctionsResource(APIResource):
             self.LOGGER.info(
                 'Updated ownership of lot {}'.format(lot.id),
                 extra=context_unpack(
-                    self.request, {'MESSAGE_ID': 'auction_ownership_update'}
+                    self.request, {'MESSAGE_ID': 'lot_ownership_update'}
                 )
             )
 
@@ -44,9 +44,9 @@ class AuctionsResource(APIResource):
 
 
 @oplotsresource(
-    name='Auction credentials',
+    name='Lots credentials',
     path='/lots/{lot_id}/extract_credentials',
-    description="Auctions Extract Credentials"
+    description="Lots Extract Credentials"
 )
 class AuctionResource(APIResource):
 
@@ -56,4 +56,10 @@ class AuctionResource(APIResource):
         lot = self.request.validated['lot']
         data = lot.serialize('extract_credentials') or {}
         data['transfer_token'] = lot.transfer_token
+        self.LOGGER.info(
+            'Extracted credentials of lot {}'.format(lot.id),
+            extra=context_unpack(
+                self.request, {'MESSAGE_ID': 'lot_credentials_extract'}
+            )
+        )
         return {'data': data}
