@@ -5,7 +5,8 @@ from openprocurement.api.constants import (  # noqa: F401
     ROUTE_PREFIX, # noqa forwarded import
     IDENTIFIER_CODES, # noqa forwarded import
     SANDBOX_MODE, # noqa forwarded import
-    LOKI_DOCUMENT_TYPES # noqa forwarded import
+    LOKI_DOCUMENT_TYPES, # noqa forwarded import
+    DEFAULT_CURRENCY, # noqa forwarded import
 )
 
 
