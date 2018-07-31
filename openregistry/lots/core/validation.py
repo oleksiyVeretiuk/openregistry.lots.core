@@ -9,6 +9,7 @@ from openprocurement.api.validation import (  # noqa: F401
     validate_document_data, # noqa forwarded import
     validate_file_upload, # noqa forwarded import
     validate_items_uniq, # noqa forwarded import
+    validate_decision_uniq, # noqa forwarded import
     validate_patch_document_data, # noqa forwarded import
     validate_t_accreditation,
     validate_decision_post, # noqa forwarded import
