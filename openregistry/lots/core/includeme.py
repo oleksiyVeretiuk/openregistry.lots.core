@@ -3,9 +3,8 @@ import logging
 from pyramid.interfaces import IRequest
 from openregistry.lots.core.utils import (
     extract_lot, isLot, register_lotType,
-    lot_from_data, SubscribersPicker
+    lot_from_data, SubscribersPicker, get_evenly_plugins
 )
-from openprocurement.api.app import get_evenly_plugins
 from openprocurement.api.interfaces import IContentConfigurator
 from openregistry.lots.core.adapters import LotConfigurator
 from openregistry.lots.core.models import ILot
