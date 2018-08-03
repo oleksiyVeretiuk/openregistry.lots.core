@@ -187,8 +187,6 @@ class Lot(BaseLot):
     status = StringType(choices=LOT_STATUSES,
                         default='draft')
     auctions = ListType(MD5Type(), default=list())
-    assets = ListType(MD5Type(), required=True, min_size=1,
-                      validators=[validate_asset_uniq])
 
     def __init__(self, *args, **kwargs):
         super(Lot, self).__init__(*args, **kwargs)
