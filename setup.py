@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '0.2'
+version = '0.2.1'
 
 lot_transferring = 'openregistry.lots.core.plugins.transferring.includeme:includeme'
 
