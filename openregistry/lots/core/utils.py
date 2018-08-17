@@ -31,6 +31,7 @@ from openprocurement.api.utils import (  # noqa: F401
     get_type,  # noqa forwarded import
     update_document_url,  # noqa forwarded import
     get_evenly_plugins,  # noqa forwarded import
+    get_plugins,  # noqa forwarded import
 )
 
 from openregistry.lots.core.constants import DEFAULT_LOT_TYPE
