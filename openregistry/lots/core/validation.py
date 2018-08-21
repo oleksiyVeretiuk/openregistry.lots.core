@@ -32,6 +32,7 @@ def validate_lot_data(request, **kwargs):
     update_logging_context(request, {'lot_id': '__new__'})
     data = validate_json_data(request)
     model = request.lot_from_data(data, create=False)
+
     validate_accreditations(request, model, 'lot')
 
     data = validate_data(request, model, "lot", data=data)

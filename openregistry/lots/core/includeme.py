@@ -19,6 +19,9 @@ def includeme(config, plugin_map):
     add_design()
     config.add_request_method(extract_lot, 'lot', reify=True)
 
+    # add accreditation
+    config.registry.accreditation = {'lot': {}}
+
     # lotType plugins support
     config.registry.lotTypes = {}
     config.add_route_predicate('_internal_type', isLot)

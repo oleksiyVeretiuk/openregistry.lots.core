@@ -142,8 +142,6 @@ class BaseLot(BaseResourceItem):
     lotCustodian = ModelType(Organization, required=True)
     documents = ListType(ModelType(Document), default=list())  # All documents and attachments related to the lot.
 
-    create_accreditation = 1
-    edit_accreditation = 2
     _internal_type = None
 
     if SANDBOX_MODE:

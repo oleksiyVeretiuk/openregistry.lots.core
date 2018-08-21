@@ -142,7 +142,7 @@ class TestValidateLotData(unittest.TestCase):
         self.request.errors = mock.MagicMock(add=mock.MagicMock(), status=None)
 
         # Mock model that returned by request.lot_from_data
-        self.model = mock.MagicMock(create_accreditation='AB')
+        self.model = mock.MagicMock()
         self.data = {'status': 'pending'}
 
     def test_success_validation(
