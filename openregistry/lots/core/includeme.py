@@ -20,7 +20,7 @@ def includeme(config, plugin_map):
     config.add_request_method(extract_lot, 'lot', reify=True)
 
     # add accreditation
-    config.registry.accreditation = {'lot': {}}
+    config.registry.accreditation['lot'] = {}
 
     # lotType plugins support
     config.registry.lotTypes = {}
