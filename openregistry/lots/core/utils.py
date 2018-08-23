@@ -32,6 +32,7 @@ from openprocurement.api.utils import (  # noqa: F401
     update_document_url,  # noqa forwarded import
     get_evenly_plugins,  # noqa forwarded import
     get_plugins,  # noqa forwarded import
+    get_forbidden_users
 )
 
 from openregistry.lots.core.constants import DEFAULT_LOT_TYPE
@@ -189,14 +190,14 @@ def store_lot(lot, patch, request):
         lot.dateModified = get_now()
     try:
         lot.store(request.registry.db)
-    except ModelValidationError, e:
+    except ModelValidationError as e:
         for i in e.message:
             request.errors.add('body', i, e.message[i])
         request.errors.status = 422
-    except ResourceConflict, e:  # pragma: no cover
+    except ResourceConflict as e:  # pragma: no cover
         request.errors.add('body', 'data', str(e))
         request.errors.status = 409
-    except Exception, e:  # pragma: no cover
+    except Exception as e:  # pragma: no cover
         request.errors.add('body', 'data', str(e))
     else:
         LOGGER.info(
