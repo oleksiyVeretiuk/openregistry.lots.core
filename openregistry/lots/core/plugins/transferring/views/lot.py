@@ -4,7 +4,7 @@ from openprocurement.api.plugins.transferring.validation import (
 )
 
 from openregistry.lots.core.plugins.transferring.validation import (
-    validate_lot_accreditation_level
+    validate_change_ownership_accreditation
 )
 from openregistry.lots.core.constants import (
     ROUTE_PREFIX
@@ -24,7 +24,7 @@ from openregistry.lots.core.utils import (
 class AuctionsResource(APIResource):
 
     @json_view(permission='create_lot',
-               validators=(validate_lot_accreditation_level,
+               validators=(validate_change_ownership_accreditation,
                            validate_ownership_data))
     def post(self):
         lot = self.request.validated['lot']
