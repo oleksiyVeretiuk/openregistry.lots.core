@@ -14,6 +14,9 @@ now = datetime.now()
 
 
 from openprocurement.api.tests.base import MOCK_CONFIG as BASE_MOCK_CONFIG
+from openprocurement.api.tests.blanks.related_processes import (
+    RelatedProcessesTestMixinBase,  # forwarded import
+)
 from openregistry.lots.core.tests.fixtures import PARTIAL_MOCK_CONFIG
 from openprocurement.api.utils import connection_mock_config
 

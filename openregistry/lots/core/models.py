@@ -12,6 +12,9 @@ from openprocurement.api.constants import (  # noqa: F401
 )
 from openprocurement.api.interfaces import IORContent
 from openprocurement.api.models.auction_models import Value  # noqa forwarded import
+from openprocurement.api.models.schema import (  # noqa: forwarded  import
+    RelatedProcess,
+)
 from openprocurement.api.models.common import (  # noqa: F401
     sensitive_embedded_role,
     BaseResourceItem,

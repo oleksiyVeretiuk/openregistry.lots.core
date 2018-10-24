@@ -15,7 +15,9 @@ from openprocurement.api.validation import (  # noqa: F401
     validate_decision_post, # noqa forwarded import
     validate_decision_patch_data, # noqa forwarded import
     validate_decision_after_rectificationPeriod,
-    validate_decision_update_in_not_allowed_status
+    validate_decision_update_in_not_allowed_status,
+    validate_related_process_data, # noqa forwarded import
+    validate_patch_related_process_data, # noqa forwarded import
 )
 
 validate_decision_after_rectificationPeriod = partial(

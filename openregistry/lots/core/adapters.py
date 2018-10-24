@@ -3,7 +3,6 @@ from openprocurement.api.adapters import ContentConfigurator
 from openprocurement.api.utils import error_handler
 from openprocurement.api.managers import (  # noqa: F401
     Manager,  # noqa forwarded import
-    ValidateMixin  # noqa forwarded import
 )
 
 

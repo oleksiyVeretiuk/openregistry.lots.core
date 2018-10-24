@@ -32,7 +32,8 @@ from openprocurement.api.utils import (  # noqa: F401
     update_document_url,  # noqa forwarded import
     get_evenly_plugins,  # noqa forwarded import
     get_plugins,  # noqa forwarded import
-    get_forbidden_users
+    get_forbidden_users,
+    validate_with,  # noqa forwarded import
 )
 
 from openregistry.lots.core.constants import DEFAULT_LOT_TYPE
