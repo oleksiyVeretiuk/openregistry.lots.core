@@ -35,6 +35,7 @@ from openprocurement.api.utils import (  # noqa: F401
     get_forbidden_users,
     validate_with,  # noqa forwarded import
 )
+from openprocurement.api.plugins.related_processes import add_related_processes_views  # noqa: forwarded import
 
 from openregistry.lots.core.constants import DEFAULT_LOT_TYPE
 
