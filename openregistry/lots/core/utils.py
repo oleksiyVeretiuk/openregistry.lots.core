@@ -11,7 +11,6 @@ from openregistry.lots.core.configurator import project_configurator
 
 
 from openprocurement.api.utils.common import (  # noqa: F401
-    get_file,  # noqa forwarded import
     update_file_content_type,  # noqa forwarded import
     context_unpack,
     error_handler,
@@ -22,11 +21,7 @@ from openprocurement.api.utils.common import (  # noqa: F401
     prepare_revision,
     raise_operation_error,  # noqa forwarded import
     update_logging_context,
-    get_first_document,  # noqa forwarded import
-    check_document,  # noqa forwarded import
-    set_first_document_fields,  # noqa forwarded import
     get_type,  # noqa forwarded import
-    update_document_url,  # noqa forwarded import
     get_forbidden_users,  # noqa forwarded import
 )
 from openprocurement.api.utils.api_resource import (  # noqa: F401
@@ -43,6 +38,13 @@ from openprocurement.api.utils.plugins import (  # noqa: F401
 from openprocurement.api.utils.timestuff import (  # noqa: F401
     calculate_business_date,  # noqa forwarded import
     time_dependent_value  # noqa forwarded import
+)
+from openprocurement.api.utils.documents import (  # noqa: F401
+    check_document,  # noqa forwarded import
+    get_file,
+    get_first_document,  # noqa forwarded import
+    set_first_document_fields,  # noqa forwarded import
+    update_document_url,  # noqa forwarded import
 )
 
 from openprocurement.api.plugins.related_processes import add_related_processes_views  # noqa: forwarded import
