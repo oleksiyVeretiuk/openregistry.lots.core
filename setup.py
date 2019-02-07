@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '0.2.4'
+VERSION = '0.2.5'
 
 lot_transferring = 'openregistry.lots.core.plugins.transferring.includeme:includeme'
 
@@ -19,7 +19,7 @@ entry_points = {
 test_requires = []
 
 setup(name='openregistry.lots.core',
-      version=version,
+      version=VERSION,
       description="",
       long_description=open("README.md").read(),
       # Get more strings from
