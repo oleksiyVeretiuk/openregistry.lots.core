@@ -6,10 +6,14 @@ from openregistry.lots.core.utils import (
     lot_from_data, SubscribersPicker, get_evenly_plugins
 )
 from openprocurement.api.interfaces import IContentConfigurator
+from openprocurement.api.plugins.related_processes import add_related_processes_views
 from openregistry.lots.core.adapters import LotConfigurator
 from openregistry.lots.core.models import ILot
+from openregistry.lots.core.traversal import factory
 
 from openprocurement.api.utils import get_plugin_aliases
+
+from openregistry.lots.core.views.related_processes import LotsRelatedProcessesResource
 
 LOGGER = logging.getLogger(__name__)
 
@@ -45,3 +49,6 @@ def includeme(config, plugin_map):
 
     # search for plugins
     get_evenly_plugins(config, plugin_map['plugins'], 'openregistry.lots.core.plugins')
+
+    # Related Processes
+    add_related_processes_views(config, '/lots/{lot_id}', factory, LotsRelatedProcessesResource)

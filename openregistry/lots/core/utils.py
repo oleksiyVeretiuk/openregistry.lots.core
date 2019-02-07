@@ -47,8 +47,6 @@ from openprocurement.api.utils.documents import (  # noqa: F401
     update_document_url,  # noqa forwarded import
 )
 
-from openprocurement.api.plugins.related_processes import add_related_processes_views  # noqa: forwarded import
-
 from openregistry.lots.core.constants import DEFAULT_LOT_TYPE
 
 from openregistry.lots.core.traversal import factory
