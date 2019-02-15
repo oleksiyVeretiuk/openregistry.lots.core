@@ -6,7 +6,8 @@ from openprocurement.api import design
 FIELDS = [
     'status',
     'lotID',
-    'lotType'
+    'lotType',
+    'next_check'
 ]
 
 CHANGES_FIELDS = FIELDS + [
