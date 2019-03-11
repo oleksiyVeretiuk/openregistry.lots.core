@@ -61,7 +61,7 @@ lots_embedded_role = sensitive_embedded_role
 create_role = (blacklist('owner', '_attachments', 'revisions',
                          'date', 'dateModified', 'lotID', 'documents',
                          'status', 'doc_id') + lots_embedded_role)
-edit_role = (blacklist('owner', '_attachments',
+edit_role = (blacklist('owner', '_attachments', 'lotType',
                        'revisions', 'date', 'dateModified', 'documents',
                        'lotID', 'mode', 'doc_id') + lots_embedded_role)
 view_role = (blacklist('_attachments', 'revisions') + lots_embedded_role)
